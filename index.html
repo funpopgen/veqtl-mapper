@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>VEQM: Variance association mapping for molecular phenotypes by funpopgen</title>
+    <title>VEQM by funpopgen</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
@@ -16,8 +16,8 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1 class="header">VEQM: Variance association mapping for molecular phenotypes</h1>
-        <p class="header"></p>
+        <h1 class="header">VEQM</h1>
+        <p class="header">VEQM: Variance association mapping for molecular phenotypes</p>
 
         <ul>
           <li class="download"><a class="buttons" href="https://github.com/funpopgen/veqm/zipball/master">Download ZIP</a></li>
@@ -77,7 +77,7 @@
 <h2>
 <a id="mapping-v-eqtl" class="anchor" href="#mapping-v-eqtl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mapping v-eQTL</h2>
 
-<p>v-eQTL, SNPs associated with the variance of gene expression, can be caused by epistasis, gene-environment interactions, and partial linkage with eQTL <a href="https://elifesciences.org/content/3/e01381">(Brown et al., 2014)</a>.</p>
+<p>v-eQTL, SNPs associated with the variance of gene expression, can be caused by epistasis, gene-environment interactions, and partial linkage with eQTL (<a href="https://elifesciences.org/content/3/e01381">Brown et al., 2014</a>).</p>
 
 <p>To run VEQM, all that is necessary is a bed file containing expression values (expression.bed) and a vcf file containing genotype values (genotype.vcf.gz, either the DS or GT field must be present).</p>
 
@@ -101,7 +101,7 @@
 <h2>
 <a id="mapping-variance-effects-related-to-parent-of-origin-eqtl" class="anchor" href="#mapping-variance-effects-related-to-parent-of-origin-eqtl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mapping variance effects related to parent of origin eQTL</h2>
 
-<p>Parent of origin eQTL occur when the effect of a genetic variant on expression depends on whether the variant is inherited from the mother or the father. Such effects can be observed as an increase in variance in the heterozygote group <a href="http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004508">(Hoggart et al., 2014)</a>. It is recommended that the genotype file only contain variants with reasonable numbers of minor allele homozygotes and heterozygotes if this analysis is run (we recommend more than 50 in both categories), as otherwise standard v-eQTL could mistakenly be discovered. The command to run this analysis is the same as the standard analysis, with the addition of the flag <strong>--het</strong>:</p>
+<p>Parent of origin eQTL occur when the effect of a genetic variant on expression depends on whether the variant is inherited from the mother or the father. Such effects can be observed as an increase in variance in the heterozygote group (<a href="http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004508">Hoggart et al., 2014</a>). It is recommended that the genotype file only contain variants with reasonable numbers of minor allele homozygotes and heterozygotes if this analysis is run (we recommend more than 50 in both categories), as otherwise standard v-eQTL could mistakenly be discovered. The command to run this analysis is the same as the standard analysis, with the addition of the flag <strong>--het</strong>:</p>
 
 <pre><code> bsub -o out -J"VEQM[1-200]" \
      "VEQM --bed expression.bed --vcf genotype.vcf.gz --genes 50 \

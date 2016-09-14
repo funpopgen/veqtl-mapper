@@ -1,3 +1,3 @@
-#VEQM :  Variance association mapping for molecular phenotypes
+#VEQM : Variance association mapping for molecular phenotypes
 
-Please refer to https://github.com/funpopgen/veqm for documentation.
+Please refer to https://funpopgen.github.io/veqm/ for documentation.

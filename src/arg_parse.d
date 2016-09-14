@@ -170,7 +170,7 @@ class Opts
   }
 }
 
-static immutable string versionString = "VEQM  -  Mapping genetic variance expression quantitative trait loci version 1.0.0";
+static immutable string versionString = "VEQM  -  Variance association mapping for molecular phenotypes version 1.0.0";
 
 void giveHelp(immutable string quitString)
 {

@@ -116,7 +116,7 @@
 <pre><code> awk 'FNR&gt;1||NR==1' results* &gt; results.all
 </code></pre>
 
-<p>The output should look like this:</p>
+<p>To extract the most significant association for each gene, run the following command:</p>
 
 <pre><code>cat &lt;(head -1 results.all) &lt;(tail -n+2 results.all |  \
     awk '{if (best[$1]=="" || p_best[$1] &gt; $7) {best[$1] = $0; p_best[$1]=$7}} \
@@ -141,7 +141,7 @@ results &lt;- data.frame(results, Qvalues = qvalue(results$Beta)$qvalues)
 <pre><code>write.table(results, file = "results.adjusted", col.names = T, row.names = F, sep = '\t', quote = F)
 </code></pre>
 
-<p>The final column in results.adjusted now contains P values, estimating the false discovery rate while accounting for all SNPs and genes tested.</p>
+<p>The final column in results.adjusted now contains Q values, which sets a threshold for estimating the false discovery rate while accounting for all SNPs and genes tested.</p>
 
 <hr>
 

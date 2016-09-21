@@ -174,6 +174,8 @@ static immutable string versionString = "VEQM  -  Variance association mapping f
 
 void giveHelp(immutable string quitString)
 {
+  import std.compiler;
   writeln(quitString);
+  writeln("Compiled with ", name, " ", version_major, ".", version_minor);
   exit(0);
 }

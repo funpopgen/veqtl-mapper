@@ -60,9 +60,14 @@
 
 <p>The standard binary is called VEQM. Use VEQM_CentOS if there is an error referring to GLIBC.</p>
 
-<p>If there are any issues, you can try <a href="#building-from-source">building from source</a>, or contact <a href="mailto:andrew.brown@unige.ch">andrew.brown@unige.ch</a>.</p>
-
 <p>VEQM requires tabix to be installed, tabix can be found here: <a href="https://github.com/samtools/htslib">https://github.com/samtools/htslib</a>.</p>
+
+<p>Sometimes, permissions have been stripped from the binaries. If you get a "Permission denied." error, this can be solved by running:</p>
+
+<pre><code>chmod 755 VEQM
+</code></pre>
+
+<p>If there are any other issues, you can try <a href="#building-from-source">building from source</a>, or contact <a href="mailto:andrew.brown@unige.ch">andrew.brown@unige.ch</a>.</p>
 
 <hr>
 

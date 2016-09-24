@@ -19,14 +19,15 @@
 
 */
 
+import core.stdc.stdlib : exit;
 import std.conv : to;
-import std.stdio : File, writeln;
+import std.process : executeShell;
+import std.stdio : File, stderr, writeln;
 
 import arg_parse : Opts;
 import read_data : Phenotype, readBed, makeOut;
 import run_analysis : analyseData;
 import calculation : genPerms;
-
 
 version (STATICLINKED)
 {
@@ -48,6 +49,14 @@ else
   void main(string[] args)
 {
   pragma(msg, "VEQM");
+
+  auto checkTabix = executeShell("command -v tabix");
+
+  if (checkTabix.status != 0)
+  {
+    stderr.writeln("Error: tabix is not installed.");
+    exit(1);
+  }
 
   auto opts = new Opts(args.to!(string[]));
 

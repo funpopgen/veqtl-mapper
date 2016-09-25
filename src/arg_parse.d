@@ -179,7 +179,7 @@ class Opts
       if (genotypeLocations.length == 0 || phenotypeLocations.length == 0)
       {
         stderr.writeln("No individuals to analyse.");
-        exit(0);
+        exit(1);
       }
     }
   }

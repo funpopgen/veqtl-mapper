@@ -89,14 +89,14 @@ auto readBed(Opts opts)
     catch (Exception e)
     {
       stderr.writeln("Too few phenotypes in bed file");
-      exit(0);
+      exit(1);
     }
   }
 
   if (bedFile.eof)
   {
     stderr.writeln("Too few phenotypes in bed file");
-    exit(0);
+    exit(1);
   }
 
   Phenotype[] phenotype;
@@ -124,7 +124,7 @@ auto readBed(Opts opts)
   if (phenotype.length == 0)
   {
     stderr.writeln("No phenotypes read from file.");
-    exit(0);
+    exit(1);
   }
 
   return phenotype;

@@ -61,7 +61,8 @@ double getDosage(char[] field, long loc, bool gt)
   auto fieldSplit = field.split(':');
   enforce(fieldSplit.length > loc, new InputException(""));
 
-  return gt ? cast(ubyte)fieldSplit[loc][0] + cast(ubyte)fieldSplit[loc][2] - 96 : fieldSplit[loc].to!double;
+  return gt ? cast(ubyte) fieldSplit[loc][0] + cast(ubyte) fieldSplit[loc][2] - 96
+    : fieldSplit[loc].to!double;
 }
 
 auto readBed(Opts opts)
@@ -99,6 +100,11 @@ auto readBed(Opts opts)
   }
 
   Phenotype[] phenotype;
+
+  if (opts.genes == 0)
+  {
+    opts.genes = uint.max;
+  }
 
   foreach (line; bedFile.byLine)
   {

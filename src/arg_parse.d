@@ -6,6 +6,7 @@ import std.array : array;
 import std.algorithm : canFind, countUntil, filter, map;
 import std.conv : to, ConvException;
 import std.exception : enforce;
+import std.file : exists;
 import std.process : pipeShell, Redirect, wait;
 import std.range : indexed, iota;
 import std.stdio : File, writeln, stderr;
@@ -97,6 +98,20 @@ class Opts
 
   private void matchIds()
   {
+
+    if (!vcf.exists)
+    {
+      stderr.writeln("Error: genotype file ", vcf, " does not exist.");
+      exit(0);
+    }
+
+    if (!(vcf ~ ".tbi").exists && !(vcf ~ ".csi").exists)
+    {
+      stderr.writeln("Error: Neither ", vcf, ".tbi nor ", vcf,
+          ".csi files are present, meaning genotype file hasn't been indexed with tabix or bcftools.");
+      exit(0);
+    }
+
     string[] phenotypeIds;
 
     try
@@ -175,6 +190,7 @@ static immutable string versionString = "VEQM  -  Variance association mapping f
 void giveHelp(immutable string quitString)
 {
   import std.compiler;
+
   writeln(quitString);
   writeln("Compiled with ", name, " ", version_major, ".", version_minor);
   exit(0);

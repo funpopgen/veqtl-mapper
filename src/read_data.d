@@ -75,7 +75,7 @@ auto readBed(Opts opts)
   catch (Exception e)
   {
     stderr.writeln(e.msg);
-    exit(0);
+    exit(1);
   }
 
   bedFile.readln;
@@ -182,7 +182,7 @@ auto makeOut(Opts opts)
   catch (Exception e)
   {
     stderr.writeln("Failed to write to output file. ", e.msg);
-    exit(0);
+    exit(1);
   }
   return outFile;
 

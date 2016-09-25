@@ -92,7 +92,7 @@ class Opts
       defaultGetoptPrinter("VEQM: mapping variance associated loci.
 ", options.options);
 
-      exit(0);
+      exit(1);
     }
   }
 
@@ -102,14 +102,14 @@ class Opts
     if (!vcf.exists)
     {
       stderr.writeln("Error: genotype file ", vcf, " does not exist.");
-      exit(0);
+      exit(1);
     }
 
     if (!(vcf ~ ".tbi").exists && !(vcf ~ ".csi").exists)
     {
       stderr.writeln("Error: Neither ", vcf, ".tbi nor ", vcf,
           ".csi files are present, meaning genotype file hasn't been indexed with tabix or bcftools.");
-      exit(0);
+      exit(1);
     }
 
     string[] phenotypeIds;
@@ -123,7 +123,7 @@ class Opts
     catch (Exception e)
     {
       stderr.writeln("Failed to read phenotype IDs. ", e.msg);
-      exit(0);
+      exit(1);
     }
 
     if (nocheck)
@@ -153,14 +153,14 @@ class Opts
           if (loc == -1)
           {
             stderr.writeln("DS and GT fields are both missing from the vcf file.");
-            exit(0);
+            exit(1);
           }
         }
       }
       catch (Exception e)
       {
         stderr.writeln("Failed to read genotype IDs. ", e.msg);
-        exit(0);
+        exit(1);
       }
 
       phenotypeLocations = genotypeIds.map!(a => phenotypeIds.countUntil(a))
@@ -173,7 +173,7 @@ class Opts
           .array != genotypeIds.indexed(genotypeLocations).array)
       {
         stderr.writeln("Failed to match IDs. THIS SHOULD NEVER HAPPEN");
-        exit(0);
+        exit(1);
       }
 
       if (genotypeLocations.length == 0 || phenotypeLocations.length == 0)

@@ -211,7 +211,7 @@ class Opts
   }
 }
 
-static immutable string versionString = "VEQM  -  Variance association mapping for molecular phenotypes version 1.0.0";
+static immutable string versionString = "VEQM  -  Variance association mapping for molecular phenotypes version 1.0.1";
 
 void giveHelp(immutable string quitString)
 {

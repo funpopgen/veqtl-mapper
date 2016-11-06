@@ -210,7 +210,7 @@ size_t[] genPerms(Opts opts, size_t nInd)
 
 }
 
-double[2] betaParameters(ref double[] minPval, bool MoM)
+double[2] betaParameters(ref double[] minPval)
 {
   auto mean = minPval.sum / minPval.length;
   auto variance = 0.0;
@@ -221,9 +221,14 @@ double[2] betaParameters(ref double[] minPval, bool MoM)
   auto alpha = mean * (mean * (1 - mean) / variance - 1);
   auto beta = alpha * (1 / mean - 1);
 
-  if (MoM)
+  auto alphaCopy = alpha;
+  auto betaCopy = beta;
+
+  auto success = mleBeta(minPval.ptr, minPval.length, &alpha, &beta);
+
+  if (success == 0)
   {
-    mleBeta(minPval.ptr, minPval.length, &alpha, &beta);
+    return [alphaCopy, betaCopy];
   }
 
   return [alpha, beta];

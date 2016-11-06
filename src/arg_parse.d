@@ -3,7 +3,8 @@ module arg_parse;
 import std.array : split;
 import core.stdc.stdlib : exit;
 import std.array : array;
-import std.algorithm : canFind, countUntil, filter, map;
+import std.algorithm : canFind, countUntil, filter, joiner, map, setDifference,
+  sort;
 import std.conv : to, ConvException;
 import std.exception : enforce;
 import std.file : exists;
@@ -18,6 +19,7 @@ class Opts
 
   //write appropriate string and quit
   bool version_ = false;
+  bool verbose = false;
   //phenotype and genotype ids are given
   bool noheader = false;
   //number of genotype columns to skip, and phenotype column
@@ -46,6 +48,7 @@ class Opts
 			  "bed", "Phenotype file [last argument].\n", &bed,
 			  "vcf", "Genotype file.\n", &vcf,
 			  "out|o", "Output file [stdout].\n", &output,
+			  "verbose", "Print additional information.", &verbose,
 			  "genes", "This specifies the number of genes to be analysed in each job.\n", &genes,
 			  "job-number", "Split the analysis into a number of smaller runs which can run in parallel on a cluster. This option specifies which of the sub-analyses should be run.\n", &jobNumber,
 			  "het", "Tests for variance differences in the heterozygous relative to homozygous groups, an indication of parent of origin effects.\n", &het,
@@ -117,8 +120,11 @@ class Opts
     try
     {
       auto bedFile = File(bed);
-
       phenotypeIds = bedFile.readln.chomp.split[4 .. $];
+      if (verbose)
+      {
+        stderr.writeln(phenotypeIds.length, " individuals present in phenotype file.");
+      }
     }
     catch (Exception e)
     {
@@ -128,6 +134,10 @@ class Opts
 
     if (nocheck)
     {
+      if (verbose)
+      {
+        stderr.writeln("Assuming same individuals in genotype file.");
+      }
       genotypeLocations = iota(phenotypeIds.length).array;
       phenotypeLocations = iota(phenotypeIds.length).array;
     }
@@ -143,6 +153,10 @@ class Opts
         auto line = pipes.stdout.readln.chomp;
 
         genotypeIds = line.split[9 .. $].to!(string[]);
+        if (verbose)
+        {
+          stderr.writeln(genotypeIds.length, " individuals present in genotype file.");
+        }
 
         auto formatField = pipes.stdout.readln.chomp.split[8].split(':');
         loc = countUntil(formatField, "DS");
@@ -169,6 +183,12 @@ class Opts
       genotypeLocations = iota(genotypeIds.length).filter!(
           a => phenotypeIds.canFind(genotypeIds[a])).array;
 
+      if (genotypeLocations.length == 0 || phenotypeLocations.length == 0)
+      {
+        stderr.writeln("No individuals to analyse.");
+        exit(1);
+      }
+
       if (phenotypeIds.indexed(phenotypeLocations)
           .array != genotypeIds.indexed(genotypeLocations).array)
       {
@@ -176,10 +196,16 @@ class Opts
         exit(1);
       }
 
-      if (genotypeLocations.length == 0 || phenotypeLocations.length == 0)
+      if (verbose && genotypeLocations.length != genotypeIds.length)
       {
-        stderr.writeln("No individuals to analyse.");
-        exit(1);
+        stderr.writeln(genotypeIds.indexed(setDifference(iota(genotypeIds.length),
+            genotypeLocations)).joiner(", "), " dropped from genotype file.");
+      }
+
+      if (verbose && phenotypeLocations.length != phenotypeIds.length)
+      {
+        stderr.writeln(phenotypeIds.indexed(setDifference(iota(phenotypeIds.length),
+            phenotypeLocations.sort!())).joiner(", "), " dropped from phenotype file.");
       }
     }
   }

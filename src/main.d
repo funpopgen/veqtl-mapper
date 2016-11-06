@@ -22,6 +22,7 @@
 import core.stdc.stdlib : exit;
 import std.conv : to;
 import std.process : executeShell;
+import std.range : enumerate;
 import std.stdio : File, stderr, writeln;
 
 import arg_parse : Opts;
@@ -60,7 +61,17 @@ else
 
   auto opts = new Opts(args.to!(string[]));
 
+  if (opts.verbose)
+  {
+    stderr.writeln("Looking for ", opts.het ? "parent of origin" : "variance", " effects.");
+  }
+
   auto phenotype = readBed(opts);
+
+  if (opts.verbose)
+  {
+    stderr.writeln("Read ", phenotype.length, " phenotypes.");
+  }
 
   auto permutations = genPerms(opts, phenotype[0].values.length);
 
@@ -68,9 +79,14 @@ else
 
   auto orderBuffer = new size_t[](phenotype[0].values.length);
 
-  foreach (ref e; phenotype)
+  foreach (ref e; phenotype.enumerate)
   {
-    analyseData(e, permutations, outFile, opts, orderBuffer);
+    if (opts.verbose)
+    {
+      stderr.writeln("Analysing gene ", e[1].geneName, " (", e[0] + 1,
+          " out of ", phenotype.length, ").");
+    }
+    analyseData(e[1], permutations, outFile, opts, orderBuffer);
   }
 }
 
@@ -120,7 +136,7 @@ unittest
   SHA1 hash;
   hash.start;
   put(hash, File("testtemp").byChunk(1024));
-  assert(toHexString(hash.finish) == "166F762354D571A6E44DDC7C04318C5FE9B11866");
+  assert(toHexString(hash.finish) == "26F6F2F43BB3543FE7A8E060F0F9A088A74EACA1");
   stderr.writeln("Passed: variance test.");
 
   // ./bin/VEQM --het --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4
@@ -138,7 +154,7 @@ unittest
 
   hash.start;
   put(hash, File("testtemp").byChunk(1024));
-  assert(toHexString(hash.finish) == "5317CB6C7EDE41C8B06986FF039B5DBA369859F3");
+  assert(toHexString(hash.finish) == "600B468E56A76D97B2B6CB1775A431F47ED4D65E");
   stderr.writeln("Passed: heterozygote test.");
 
 }

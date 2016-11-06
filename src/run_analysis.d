@@ -12,7 +12,7 @@ import calculation : betaParameters, correlation, corPvalue, rank,
   rank_discrete, Opts, transform, VarianceException;
 import read_data : Phenotype, Genotype, readGenotype;
 
-enum double EPSILON = 0.00000001;  //comparison for X>=Y is done X > Y - epsilon
+enum double EPSILON = 0.00000001; //comparison for X>=Y is done X > Y - epsilon
 
 version (unittest)
 {
@@ -95,6 +95,11 @@ void analyseData(ref Phenotype phenotype, ref size_t[] perms, ref File outFile,
 {
   auto genotype = readGenotype(opts, phenotype.chromosome, phenotype.location,
       phenotype.values.length, phenotype.geneName);
+
+  if (opts.verbose)
+  {
+    stderr.writeln("Extracted ", genotype.length, " usable genotypes.");
+  }
 
   veqm(opts, perms, phenotype, genotype, outFile, orderBuffer);
 }
@@ -184,7 +189,7 @@ void veqm(ref Opts opts, ref size_t[] perms, ref Phenotype phenotype,
   double len = sortMax.length + 1;
   auto minPvalues = sortMax.map!(a => corPvalue(a, nInd)).array;
   auto variants = genotypes.count!(a => a.cor != 2);
-  auto betaParam = betaParameters(minPvalues, variants > 50);
+  auto betaParam = betaParameters(minPvalues);
 
   //read through old file and compare correlations to sortMax to calculate FWER
   foreach (genotype; genotypes)

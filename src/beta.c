@@ -16,9 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <float.h>
 #include <gsl/gsl_multimin.h>
-#include <gsl/gsl_sf_psi.h>
 #include <gsl/gsl_sf_gamma.h>
+#include <gsl/gsl_sf_psi.h>
+#include <math.h>
 
 #define BETA_SHAPE1_MIN 0.1
 #define BETA_SHAPE2_MIN 1
@@ -30,8 +32,24 @@ double betaLogLikelihood(const gsl_vector* v, void* params)
   double* p = (double*)params;
   double beta_shape1 = gsl_vector_get(v, 0);
   double beta_shape2 = gsl_vector_get(v, 1);
-  return -1.0 * ((beta_shape1 - 1) * p[0] + (beta_shape2 - 1) * p[1] -
-                 p[2] * gsl_sf_lnbeta(beta_shape1, beta_shape2));
+
+  if (beta_shape1 < BETA_SHAPE1_MIN || beta_shape1 > BETA_SHAPE1_MAX ||
+      beta_shape2 < BETA_SHAPE2_MIN || beta_shape2 > BETA_SHAPE2_MAX)
+  {
+    return DBL_MAX;
+  }
+
+  gsl_set_error_handler_off();
+
+  double logLik = gsl_sf_lnbeta(beta_shape1, beta_shape2);
+
+  if (isnan(logLik))
+  {
+    return DBL_MAX;
+  }
+
+  return -1.0 *
+         ((beta_shape1 - 1) * p[0] + (beta_shape2 - 1) * p[1] - p[2] * logLik);
 }
 
 int mleBeta(double* pval, size_t nPerm, double* beta_shape1,
@@ -52,7 +70,9 @@ int mleBeta(double* pval, size_t nPerm, double* beta_shape1,
   double par[3];
   par[0] = 0.0;
   par[1] = 0.0;
-  for (int e = 0; e < nPerm; e++)
+
+  int e = 0;
+  for (e = 0; e < nPerm; e++)
   {
     if (pval[e] == 1.0)
       pval[e] = 0.99999999;
@@ -78,8 +98,11 @@ int mleBeta(double* pval, size_t nPerm, double* beta_shape1,
   {
     iter++;
     status = gsl_multimin_fminimizer_iterate(s);
+    if (s->fval == DBL_MAX)
+      return (0);
     if (status)
       break;
+
     size = gsl_multimin_fminimizer_size(s);
     status = gsl_multimin_test_size(size, 0.01);
   } while (status == GSL_CONTINUE && iter < 1000);

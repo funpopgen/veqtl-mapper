@@ -30,8 +30,15 @@ import read_data : Phenotype, readBed, makeOut;
 import run_analysis : analyseData;
 import calculation : genPerms;
 
-pragma(lib, "gsl");
-pragma(lib, "gslcblas");
+version (STATICLINKED)
+{
+  pragma(msg, "Statically linked");
+}
+else
+{
+  pragma(lib, "gsl");
+  pragma(lib, "gslcblas");
+}
 
 version (unittest)
   void main()

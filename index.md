@@ -29,7 +29,7 @@ Sometimes, permissions have been stripped from the binaries. If you get a "Permi
 
     chmod 755 VEQM
 
-If there are any other issues, you can try [building from source](#building-from-source), or contact andrew.brown@unige.ch.
+If there are any other issues, you can try [building from source](#building-from-source), or contact [andrew.brown@unige.ch](mailto:andrew.brown@unige.ch).
 
 
 ***

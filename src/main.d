@@ -97,23 +97,25 @@ unittest
   import std.file : exists, remove;
   import std.range : put;
   import std.stdio : stderr;
+  import std.uuid;
 
-  if ("testtemp".exists)
+  auto testFile = randomUUID.toString;
+
+  while (testFile.exists)
   {
-    stderr.writeln("Running unittests would overwrite testtemp file");
-    exit(0);
+    testFile = randomUUID.toString;
   }
 
   scope (exit)
   {
-    if ("testtemp".exists)
-      "testtemp".remove;
+    if (testFile.exists)
+      testFile.remove;
   }
 
   // ./bin/VEQM --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4
   auto args = [
     "prog", "--bed", "data/phenotype.bed", "--job-number", "1", "--genes", "10",
-    "--vcf", "data/genotype_veqm.vcf.gz", "--perm", "10000,4", "--out", "testtemp"
+    "--vcf", "data/genotype_veqm.vcf.gz", "--perm", "10000,4", "--out", testFile
   ];
 
   auto opts = new Opts(args.to!(string[]));
@@ -135,7 +137,7 @@ unittest
 
   SHA1 hash;
   hash.start;
-  put(hash, File("testtemp").byChunk(1024));
+  put(hash, File(testFile).byChunk(1024));
   assert(toHexString(hash.finish) == "26F6F2F43BB3543FE7A8E060F0F9A088A74EACA1");
   stderr.writeln("Passed: variance test.");
 
@@ -153,7 +155,7 @@ unittest
   outFile.close;
 
   hash.start;
-  put(hash, File("testtemp").byChunk(1024));
+  put(hash, File(testFile).byChunk(1024));
   assert(toHexString(hash.finish) == "600B468E56A76D97B2B6CB1775A431F47ED4D65E");
   stderr.writeln("Passed: heterozygote test.");
 

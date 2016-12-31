@@ -48,7 +48,7 @@ class Opts
 			  "bed", "Phenotype file [last argument].\n", &bed,
 			  "vcf", "Genotype file.\n", &vcf,
 			  "out|o", "Output file [stdout].\n", &output,
-			  "verbose", "Print additional information.", &verbose,
+			  "verbose", "Print additional information.\n", &verbose,
 			  "genes", "This specifies the number of genes to be analysed in each job.\n", &genes,
 			  "job-number", "Split the analysis into a number of smaller runs which can run in parallel on a cluster. This option specifies which of the sub-analyses should be run.\n", &jobNumber,
 			  "het", "Tests for variance differences in the heterozygous relative to homozygous groups, an indication of parent of origin effects.\n", &het,
@@ -212,13 +212,14 @@ class Opts
 }
 
 static immutable string versionString = "VEQM  -  Variance association mapping for molecular phenotypes version 1.0.1";
+static immutable string commitString = chomp(cast(string) import("commit"));
 
 void giveHelp(immutable string quitString)
 {
   import std.compiler;
 
   static string[] dateString = __DATE__.split;
-  writeln(quitString);
+  writeln(quitString, "-", commitString);
   writeln("Compiled with ", name, " ", version_major, ".", version_minor,
       " at ", __TIME__, ", ", dateString[1], " ", dateString[0], " ", dateString[2], ".");
   exit(0);

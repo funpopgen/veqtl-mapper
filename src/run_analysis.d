@@ -1,8 +1,9 @@
 module run_analysis;
 
 import std.algorithm : count, map, max, sort, sum;
-import std.array : array, join;
+import std.array : array;
 import std.conv : ConvException, to;
+import std.format : format;
 import std.math : fabs, isNaN, pow, sqrt;
 import std.numeric : dotProduct;
 import std.range : chunks, enumerate, iota, indexed, SearchPolicy, zip;
@@ -174,9 +175,7 @@ void veqm(ref Opts opts, ref size_t[] perms, ref Phenotype phenotype,
 
       genotype.cor = fabs(corr[0]);
 
-      genotype.snpId ~= [corr[0], corr[1],
-        (1.0 + simplePerm.count!(a => a > genotype.cor - EPSILON)) / (nPerm + 1)].to!(string[])
-        .join("\t");
+      genotype.snpId ~= format("%s\t%s\t%s", corr[0], corr[1], (1.0 + simplePerm.count!(a => a > genotype.cor - EPSILON)) / (nPerm + 1));
     }
     catch (VarianceException e)
     {

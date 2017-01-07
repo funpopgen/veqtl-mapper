@@ -112,8 +112,13 @@ auto readBed(const Opts opts)
     {
       phenotype ~= Phenotype(line, opts.phenotypeLocations);
     }
+    catch (InputException e)
+    {
+      stderr.writeln("Gene ", line.split[3], " is constant. Nothing to analyse.");
+    }
     catch (Exception e)
     {
+      stderr.writeln("Failed to read gene ", line.split[3], ".");
     }
     geneCount--;
   }

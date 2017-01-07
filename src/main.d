@@ -19,16 +19,15 @@
 
 */
 
+import arg_parse : Opts;
+import calculation : genPerms;
 import core.stdc.stdlib : exit;
+import read_data : makeOut, Phenotype, readBed;
+import run_analysis : analyseData;
 import std.conv : to;
 import std.process : executeShell;
 import std.range : enumerate;
 import std.stdio : File, stderr, writeln;
-
-import arg_parse : Opts;
-import read_data : Phenotype, readBed, makeOut;
-import run_analysis : analyseData;
-import calculation : genPerms;
 
 version (STATICLINKED)
 {
@@ -51,7 +50,7 @@ else
 {
   pragma(msg, "VEQM");
 
-  auto checkTabix = executeShell("command -v tabix");
+  immutable auto checkTabix = executeShell("command -v tabix");
 
   if (checkTabix.status != 0)
   {
@@ -59,7 +58,7 @@ else
     exit(1);
   }
 
-  auto opts = new Opts(args.to!(string[]));
+  const auto opts = new Opts(args.to!(string[]));
 
   if (opts.verbose)
   {
@@ -84,20 +83,21 @@ else
     if (opts.verbose)
     {
       stderr.writeln("Analysing gene ", e[1].geneName, " (", e[0] + 1,
-          " out of ", phenotype.length, ").");
+          " out of ", phenotype.length, "). TSS is ", e[1].chromosome, ":", e[1].location, ".");
     }
     analyseData(e[1], permutations, outFile, opts, orderBuffer);
   }
 }
 
-unittest
+@system unittest
 {
   import core.stdc.stdlib : exit;
-  import std.digest.sha;
+  import std.array : split;
+  import std.digest.sha : SHA1, toHexString;
   import std.file : exists, remove;
   import std.range : put;
   import std.stdio : stderr;
-  import std.uuid;
+  import std.uuid : randomUUID;
 
   auto testFile = randomUUID.toString;
 
@@ -113,12 +113,9 @@ unittest
   }
 
   // ./bin/VEQM --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4
-  auto args = [
-    "prog", "--bed", "data/phenotype.bed", "--job-number", "1", "--genes", "10",
-    "--vcf", "data/genotype_veqm.vcf.gz", "--perm", "10000,4", "--out", testFile
-  ];
 
-  auto opts = new Opts(args.to!(string[]));
+  const auto opts = new Opts(("./bin/VEQM --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4 --out " ~ testFile)
+      .split);
 
   auto phenotype = readBed(opts);
 
@@ -143,13 +140,14 @@ unittest
 
   // ./bin/VEQM --het --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4
 
-  opts.het = true;
+  const auto optsHet = new Opts(("./bin/VEQM --het --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4 --out " ~ testFile)
+      .split);
 
-  outFile = makeOut(opts);
+  outFile = makeOut(optsHet);
 
   foreach (ref e; phenotype)
   {
-    analyseData(e, permutations, outFile, opts, orderBuffer);
+    analyseData(e, permutations, outFile, optsHet, orderBuffer);
   }
 
   outFile.close;

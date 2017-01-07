@@ -1,26 +1,18 @@
 module run_analysis;
 
+import calculation : betaParameters, corPvalue, correlation, Opts, rank,
+  rank_discrete, transform, VarianceException;
+import read_data : Genotype, Phenotype, readGenotype;
 import std.algorithm : count, map, max, sort, sum;
 import std.array : array;
 import std.conv : ConvException, to;
 import std.format : format;
 import std.math : fabs, isNaN, pow, sqrt;
 import std.numeric : dotProduct;
-import std.range : chunks, enumerate, iota, indexed, SearchPolicy, zip;
+import std.range : chunks, enumerate, indexed, iota, SearchPolicy, zip;
 import std.stdio : File, stderr, writeln;
 
-import calculation : betaParameters, correlation, corPvalue, rank,
-  rank_discrete, Opts, transform, VarianceException;
-import read_data : Phenotype, Genotype, readGenotype;
-
 enum double EPSILON = 0.00000001; //comparison for X>=Y is done X > Y - epsilon
-
-version (unittest)
-{
-  import std.digest.sha;
-  import std.range : put;
-  import std.file : exists, remove;
-}
 
 pure nothrow extern (C)
 {
@@ -92,10 +84,9 @@ pure nothrow extern (C)
 
 }
 void analyseData(ref Phenotype phenotype, ref size_t[] perms, ref File outFile,
-    ref Opts opts, ref size_t[] orderBuffer)
+    const ref Opts opts, ref size_t[] orderBuffer)
 {
-  auto genotype = readGenotype(opts, phenotype.chromosome, phenotype.location,
-      phenotype.values.length, phenotype.geneName);
+  auto genotype = readGenotype(opts, phenotype.chromosome, phenotype.location, phenotype.geneName);
 
   if (opts.verbose)
   {
@@ -105,7 +96,7 @@ void analyseData(ref Phenotype phenotype, ref size_t[] perms, ref File outFile,
   veqm(opts, perms, phenotype, genotype, outFile, orderBuffer);
 }
 
-void veqm(ref Opts opts, ref size_t[] perms, ref Phenotype phenotype,
+void veqm(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
     ref Genotype[] genotypes, ref File outFile, ref size_t[] orderBuffer)
 {
   immutable size_t nInd = phenotype.values.length;
@@ -175,7 +166,8 @@ void veqm(ref Opts opts, ref size_t[] perms, ref Phenotype phenotype,
 
       genotype.cor = fabs(corr[0]);
 
-      genotype.snpId ~= format("%s\t%s\t%s", corr[0], corr[1], (1.0 + simplePerm.count!(a => a > genotype.cor - EPSILON)) / (nPerm + 1));
+      genotype.snpId ~= format("%s\t%s\t%s", corr[0], corr[1],
+          (1.0 + simplePerm.count!(a => a > genotype.cor - EPSILON)) / (nPerm + 1));
     }
     catch (VarianceException e)
     {
@@ -184,10 +176,9 @@ void veqm(ref Opts opts, ref size_t[] perms, ref Phenotype phenotype,
   }
 
   //sort stored maximum statistics
-  auto sortMax = sort!()(maxCor);
-  double len = sortMax.length + 1;
+  auto sortMax = maxCor.sort();
+  immutable double len = sortMax.length + 1.0;
   auto minPvalues = sortMax.map!(a => corPvalue(a, nInd)).array;
-  auto variants = genotypes.count!(a => a.cor != 2);
   auto betaParam = betaParameters(minPvalues);
 
   //read through old file and compare correlations to sortMax to calculate FWER

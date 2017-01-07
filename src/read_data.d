@@ -1,17 +1,16 @@
 module read_data;
 
+import arg_parse : Opts;
+import calculation : rank, transform;
+import core.stdc.stdlib : exit;
 import std.algorithm : countUntil, map, max;
 import std.array : array, split;
-import std.conv : to, ConvException;
+import std.conv : ConvException, to;
 import std.exception : enforce;
 import std.format : format;
-import core.stdc.stdlib : exit;
-import std.range : indexed, iota;
-import std.stdio : File, readln, stdout, stderr, writeln;
 import std.process : pipeShell, Redirect, wait;
-
-import arg_parse : Opts;
-import calculation : transform, rank;
+import std.range : indexed, iota;
+import std.stdio : File, readln, stderr, stdout, writeln;
 
 class InputException : Exception
 {
@@ -28,7 +27,7 @@ struct Phenotype
   size_t location;
   double[] values;
 
-  this(char[] line, size_t[] indices)
+  this(char[] line, const size_t[] indices)
   {
     auto splitLine = line.split;
     geneName = splitLine[3].to!string;
@@ -46,7 +45,7 @@ struct Genotype
   double[] values;
   double cor;
 
-  this(char[] line, size_t[] indices, long loc, bool gt)
+  this(char[] line, const size_t[] indices, const long loc, const bool gt)
   {
     auto splitLine = line.split;
     snpId = format("\t%-(%s\t%)\t", splitLine[0 .. 4]);
@@ -66,7 +65,7 @@ double getDosage(char[] field, long loc, bool gt)
     : fieldSplit[loc].to!double;
 }
 
-auto readBed(Opts opts)
+auto readBed(const Opts opts)
 {
   File bedFile;
   try
@@ -102,24 +101,21 @@ auto readBed(Opts opts)
 
   Phenotype[] phenotype;
 
-  if (opts.genes == 0)
-  {
-    opts.genes = uint.max;
-  }
+  auto geneCount = opts.genes == 0 ? uint.max : opts.genes;
 
   foreach (line; bedFile.byLine)
   {
-    if (opts.genes == 0)
+    if (geneCount == 0)
       break;
 
     try
     {
       phenotype ~= Phenotype(line, opts.phenotypeLocations);
-      opts.genes--;
     }
     catch (Exception e)
     {
     }
+    geneCount--;
   }
 
   if (phenotype.length == 0)
@@ -131,10 +127,10 @@ auto readBed(Opts opts)
   return phenotype;
 }
 
-auto readGenotype(Opts opts, string chrom, size_t location, size_t len, string geneName)
+auto readGenotype(const Opts opts, string chrom, size_t location, string geneName)
 {
 
-  size_t start = location < opts.window ? 0 : location - opts.window;
+  immutable size_t start = location < opts.window ? 0 : location - opts.window;
 
   string tabixCommand = "tabix " ~ opts.vcf ~ " " ~ chrom ~ ":" ~ start.to!string ~ "-" ~ (
       location + opts.window).to!string ~ " | grep -v '#' | cut -f1,2,4,5,10-";
@@ -165,7 +161,7 @@ auto readGenotype(Opts opts, string chrom, size_t location, size_t len, string g
   return genotype;
 }
 
-auto makeOut(Opts opts)
+auto makeOut(const Opts opts)
 {
   File outFile;
 

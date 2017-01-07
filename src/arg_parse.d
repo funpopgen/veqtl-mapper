@@ -1,21 +1,20 @@
 module arg_parse;
 
-import std.array : split;
 import core.stdc.stdlib : exit;
-import std.array : array;
 import std.algorithm : canFind, countUntil, filter, joiner, map, setDifference,
   sort;
-import std.conv : to, ConvException;
+import std.array : array, split;
+import std.conv : ConvException, to;
 import std.exception : enforce;
 import std.file : exists;
+import std.getopt : arraySep, defaultGetoptPrinter, getopt;
 import std.process : pipeShell, Redirect, wait;
 import std.range : indexed, iota;
-import std.stdio : File, writeln, stderr;
+import std.stdio : File, stderr, writeln;
 import std.string : chomp;
 
 class Opts
 {
-  import std.getopt;
 
   //write appropriate string and quit
   bool version_ = false;
@@ -64,7 +63,7 @@ class Opts
 
   this(string[] args)
   {
-    bool noArgs = args.length == 1;
+    immutable bool noArgs = args.length == 1;
     try
     {
       auto options = processOptions(args);
@@ -216,7 +215,7 @@ static immutable string commitString = chomp(cast(string) import("commit"));
 
 void giveHelp(immutable string quitString)
 {
-  import std.compiler;
+  import std.compiler : name, version_major, version_minor;
 
   static string[] dateString = __DATE__.split;
   writeln(quitString, "-", commitString);

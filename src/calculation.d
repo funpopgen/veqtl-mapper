@@ -1,10 +1,10 @@
 module calculation;
 
+import arg_parse : Opts;
 import std.algorithm : sum;
 import std.conv : to;
 import std.exception : enforce;
 import std.math : fabs, sqrt;
-import arg_parse : Opts;
 
 version (unittest)
 {
@@ -31,7 +31,7 @@ extern (C)
   int mleBeta(double* pval, size_t nPerm, double* alpha, double* beta);
 }
 
-unittest
+@system unittest
 {
   // Checks GSL gives right p value for t statistic
   assert(approxEqual(gsl_cdf_tdist_P(-1.6, 7), 0.07681585));
@@ -65,7 +65,7 @@ pure ref T[] rank(T)(ref T[] rankArray, size_t[] orderIndex)
   return rankArray;
 }
 
-unittest
+@safe unittest
 {
   //Simple test of ranking with ties
   auto vector = [10.0, 9, 2, 9, 3];
@@ -94,13 +94,12 @@ pure ref T[] rank_discrete(T)(ref T[] rankArray)
   return rankArray;
 }
 
-unittest
+@safe unittest
 {
   //Ranking of discrete genotypes
-  import std.array : array;
   import std.algorithm : map;
-  import std.conv : to;
-  import std.random;
+  import std.array : array;
+  import std.random : uniform;
   import std.range : iota;
 
   auto vector = [0.0, 1, 0, 2, 2, 2, 1];
@@ -136,7 +135,7 @@ pure void transform(ref double[] vector)
     e = (e - mean) / M2;
 }
 
-unittest
+@system unittest
 {
   //Checks that transform works on randomly generated vector
   import std.algorithm : reduce;
@@ -171,7 +170,7 @@ double corPvalue(double cor, size_t nInd)
   return gsl_cdf_tdist_P(-fabs(cor * sqrt((nInd - 2) / (1 - cor * cor))), nInd - 2) * 2;
 }
 
-unittest
+@system unittest
 {
   //Check correlation of phenotype with 3rd row genotype against estimates from R
   auto corFromR = [-0.2863051, 0.4225695];
@@ -192,11 +191,11 @@ unittest
   assert(approxEqual(cor[1], corFromR[1]));
 }
 
-size_t[] genPerms(Opts opts, size_t nInd)
+size_t[] genPerms(const Opts opts, size_t nInd)
 {
   import std.array : array;
+  import std.random : randomShuffle, rndGen;
   import std.range : chunks, cycle, iota, take;
-  import std.random : rndGen, randomShuffle;
 
   if (opts.perms.length > 1)
     rndGen.seed(opts.perms[1]);
@@ -212,7 +211,7 @@ size_t[] genPerms(Opts opts, size_t nInd)
 
 double[2] betaParameters(ref double[] minPval)
 {
-  auto mean = minPval.sum / minPval.length;
+  immutable auto mean = minPval.sum / minPval.length;
   auto variance = 0.0;
   foreach (ref e; minPval)
     variance += (e - mean) * (e - mean);
@@ -221,10 +220,10 @@ double[2] betaParameters(ref double[] minPval)
   auto alpha = mean * (mean * (1 - mean) / variance - 1);
   auto beta = alpha * (1 / mean - 1);
 
-  auto alphaCopy = alpha;
-  auto betaCopy = beta;
+  immutable auto alphaCopy = alpha;
+  immutable auto betaCopy = beta;
 
-  auto success = mleBeta(minPval.ptr, minPval.length, &alpha, &beta);
+  immutable auto success = mleBeta(minPval.ptr, minPval.length, &alpha, &beta);
 
   if (success == 0)
   {

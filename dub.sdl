@@ -9,6 +9,7 @@ sourceFiles "src/beta.o"
 targetName "VEQM"
 targetPath "bin/"
 targetType "executable"
+stringImportPaths "views"
 preBuildCommands "mkdir -p views" "git rev-parse --short HEAD > views/commit"
 postBuildCommands "rm src/beta.o" "strip bin/VEQM"
 

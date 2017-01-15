@@ -25,7 +25,6 @@ import core.stdc.stdlib : exit;
 import read_data : makeOut, Phenotype, readBed;
 import run_analysis : analyseData;
 import std.conv : to;
-import std.process : executeShell;
 import std.range : enumerate;
 import std.stdio : File, stderr, writeln;
 
@@ -49,14 +48,6 @@ else
   void main(string[] args)
 {
   pragma(msg, "VEQM");
-
-  immutable auto checkTabix = executeShell("command -v tabix");
-
-  if (checkTabix.status != 0)
-  {
-    stderr.writeln("Error: tabix is not installed.");
-    exit(1);
-  }
 
   const auto opts = new Opts(args.to!(string[]));
 

@@ -8,7 +8,7 @@ import std.conv : ConvException, to;
 import std.exception : enforce;
 import std.file : exists;
 import std.getopt : arraySep, defaultGetoptPrinter, getopt;
-import std.process : pipeShell, Redirect, wait;
+import std.process : executeShell, pipeShell, Redirect, wait;
 import std.range : indexed, iota;
 import std.stdio : File, stderr, writeln;
 import std.string : chomp;
@@ -76,6 +76,14 @@ class Opts
 
       if (version_)
         giveHelp(versionString);
+
+      immutable auto checkTabix = executeShell("command -v tabix");
+
+      if (checkTabix.status != 0)
+      {
+	stderr.writeln("Error: tabix is not installed.");
+	exit(1);
+      }
 
       matchIds();
 

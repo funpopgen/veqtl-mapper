@@ -81,8 +81,8 @@ class Opts
 
       if (checkTabix.status != 0)
       {
-	stderr.writeln("Error: tabix is not installed.");
-	exit(1);
+        stderr.writeln("Error: tabix is not installed.");
+        exit(1);
       }
 
       matchIds();
@@ -212,7 +212,7 @@ class Opts
       if (verbose && phenotypeLocations.length != phenotypeIds.length)
       {
         stderr.writeln(phenotypeIds.indexed(setDifference(iota(phenotypeIds.length),
-            phenotypeLocations.sort!())).joiner(", "), " dropped from phenotype file.");
+            phenotypeLocations.dup.sort!())).joiner(", "), " dropped from phenotype file.");
       }
     }
   }

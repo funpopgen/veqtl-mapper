@@ -1,5 +1,5 @@
-title: VEQM
-description: "VEQM: Variance association mapping for molecular phenotypes"
+title: veqtl-mapper
+description: "veqtl-mapper: Variance association mapping for molecular phenotypes"
 google_analytics: 
 show_downloads: true
 theme: jekyll-theme-dinky

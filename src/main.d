@@ -47,7 +47,7 @@ version (unittest)
 else
   void main(string[] args)
 {
-  pragma(msg, "VEQM");
+  pragma(msg, "veqtl-mapper");
 
   const auto opts = new Opts(args.to!(string[]));
 
@@ -103,9 +103,9 @@ else
       testFile.remove;
   }
 
-  // ./bin/VEQM --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4
+  // ./bin/veqtl-mapper --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4
 
-  const auto opts = new Opts(("./bin/VEQM --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4 --out " ~ testFile)
+  const auto opts = new Opts(("./bin/veqtl-mapper --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4 --out " ~ testFile)
       .split);
 
   auto phenotype = readBed(opts);
@@ -129,9 +129,9 @@ else
   assert(toHexString(hash.finish) == "26F6F2F43BB3543FE7A8E060F0F9A088A74EACA1");
   stderr.writeln("Passed: variance test.");
 
-  // ./bin/VEQM --het --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4
+  // ./bin/veqtl-mapper --het --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4
 
-  const auto optsHet = new Opts(("./bin/VEQM --het --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype_veqm.vcf.gz --perm 10000,4 --out " ~ testFile)
+  const auto optsHet = new Opts(("./bin/veqtl-mapper --het --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4 --out " ~ testFile)
       .split);
 
   outFile = makeOut(optsHet);

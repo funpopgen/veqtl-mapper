@@ -69,7 +69,7 @@ class Opts
       auto options = processOptions(args);
       if (options.helpWanted || noArgs)
       {
-        defaultGetoptPrinter("VEQM: mapping variance associated loci.
+        defaultGetoptPrinter("veqtl-mapper: mapping variance associated loci.
 ", options.options);
         exit(0);
       }
@@ -99,7 +99,7 @@ class Opts
 
       auto p = ["dummy"];
       auto options = processOptions(p);
-      defaultGetoptPrinter("VEQM: mapping variance associated loci.
+      defaultGetoptPrinter("veqtl-mapper: mapping variance associated loci.
 ", options.options);
 
       exit(1);
@@ -218,7 +218,7 @@ class Opts
   }
 }
 
-static immutable string versionString = "VEQM  -  Variance association mapping for molecular phenotypes version 1.0.1";
+static immutable string versionString = "veqtl-mapper  -  Variance association mapping for molecular phenotypes version 1.0.1";
 static immutable string commitString = chomp(cast(string) import("commit"));
 
 void giveHelp(immutable string quitString)

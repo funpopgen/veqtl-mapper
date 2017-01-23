@@ -4,7 +4,7 @@ DMD = dmd
 DSOURCES = src/main.d src/arg_parse.d src/read_data.d src/calculation.d src/run_analysis.d
 
 ldc : ${DSOURCES} src/beta.o views/commit
-	${LDC} -release -enable-inlining -O -w -oq -Jviews ${DSOURCES} src/beta.o -of="bin/VEQM"
+	${LDC} -release -enable-inlining -O -w -oq -Jviews ${DSOURCES} src/beta.o -of="bin/veqtl-mapper"
 	rm -f bin/*.o src/*.o *.o
 
 test : ${DSOURCES} src/beta.o
@@ -13,7 +13,7 @@ test : ${DSOURCES} src/beta.o
 	rm -f bin/*.o unittest src/*.o *.o
 
 dmd : ${DSOURCES} src/beta.o
-	${DMD} -O -release -noboundscheck -inline -Jviews ${DSOURCES} src/beta.o -ofbin/VEQM
+	${DMD} -O -release -noboundscheck -inline -Jviews ${DSOURCES} src/beta.o -ofbin/veqtl-mapper
 	rm -f bin/*.o src/*.o *.o
 
 dmd_test : ${DSOURCES} src/beta.o
@@ -28,8 +28,4 @@ views/commit : ${DSOURCES} src/beta.c
 .PHONY : test ldc dmd dmd_test clean install
 
 clean :
-	rm -f bin/*.o src/*.o *.o bin/VEQM
-
-install : ${DSOURCES} VEQM.1
-	cp -v $(shell pwd)/bin/VEQM /usr/local/bin/
-	cp -v $(shell pwd)/VEQM.1 /usr/local/man/man1/
+	rm -f bin/*.o src/*.o *.o bin/veqtl-mapper

@@ -93,10 +93,10 @@ void analyseData(ref Phenotype phenotype, ref size_t[] perms, ref File outFile,
     stderr.writeln("Extracted ", genotype.length, " usable genotypes.");
   }
 
-  veqm(opts, perms, phenotype, genotype, outFile, orderBuffer);
+  mapVeQTL(opts, perms, phenotype, genotype, outFile, orderBuffer);
 }
 
-void veqm(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
+void mapVeQTL(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
     ref Genotype[] genotypes, ref File outFile, ref size_t[] orderBuffer)
 {
   immutable size_t nInd = phenotype.values.length;

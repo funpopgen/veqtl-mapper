@@ -7,16 +7,16 @@ ldc : ${DSOURCES} src/beta.o views/commit
 	${LDC} -release -enable-inlining -O -w -oq -Jviews ${DSOURCES} src/beta.o -of="bin/veqtl-mapper"
 	rm -f bin/*.o src/*.o *.o
 
-test : ${DSOURCES} src/beta.o
+test : ${DSOURCES} src/beta.o views/commit
 	${LDC} -d-debug -g -unittest -w -Jviews ${DSOURCES} src/beta.o -of="unittest"
 	./unittest
 	rm -f bin/*.o unittest src/*.o *.o
 
-dmd : ${DSOURCES} src/beta.o
+dmd : ${DSOURCES} src/beta.o views/commit
 	${DMD} -O -release -noboundscheck -inline -Jviews ${DSOURCES} src/beta.o -ofbin/veqtl-mapper
 	rm -f bin/*.o src/*.o *.o
 
-dmd_test : ${DSOURCES} src/beta.o
+dmd_test : ${DSOURCES} src/beta.o views/commit
 	${DMD} -debug -g -unittest -w -Jviews ${DSOURCES} src/beta.o -ofunittest
 	./unittest
 	rm -f bin/*.o unittest src/*.o *.o

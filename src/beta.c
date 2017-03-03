@@ -15,7 +15,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/*
+This file contains source code, based on the initial implementation from Ongen et al, 2016, Bioinformatics which given a set of P values, estimates the parameters of a beta distribution which best fit this sample.
 
+ */
 #include <float.h>
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_sf_gamma.h>

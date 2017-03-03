@@ -1,5 +1,16 @@
 module arg_parse;
 
+/*
+
+This file contains the routines for parsing the command line arguments.
+
+It also performs the following task:
+
+1) Checks if tabix is installed and fails nicely if not.
+2) Reads the phenotype and genotype IDs and calculates the permutations required to match them.
+3) Checks if the DS or GT field is present in the vcf file, using them prefereably in that order.
+
+ */
 import core.stdc.stdlib : exit;
 import std.algorithm : canFind, countUntil, filter, joiner, map, setDifference,
   sort;

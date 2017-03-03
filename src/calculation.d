@@ -1,5 +1,15 @@
 module calculation;
 
+/*
+This module defines functions necessary for calculating spearman correlation tests (1-3), generating a set of permutations (4) and fitting the beta distribution to a set of values (5). It includes:
+
+1. Produce the ranking of an array, correctly accounting for ties.
+2. Scale and translate an array so it has mean zero and sum of squares 1.
+3. Given 2 vectors, first ranked then transformed, calculate spearman correlation and P value copmared to t distribution.
+4. Generates an array, number of individuals * number of permutations where each chunk of n individuals is a permutation of [0, n individuals)
+5. The multiple testing correction is based on sampling the minimum P value under the complete null hypothesis of no association. From the analysis we have a collection from this distribution, we estimate the beta distribution which best fits this firstly by maximum likelihood functions in the gsl. If this fails we return the method of moments estimates.
+
+*/
 import arg_parse : Opts;
 import std.algorithm : sum;
 import std.conv : to;

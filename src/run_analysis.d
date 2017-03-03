@@ -1,5 +1,25 @@
 module run_analysis;
 
+/*
+This module contains the main routines for analysing the data, it is called once for each phenotype:
+
+1. For each phenotype we first extract all the genotypes from the cis window, then looping over all SNPs:
+
+    2a. A general eQTL effect of the SNP is regressed from the phenotype.
+    2b. A spearman correlation test is performed between the square of these residuals and the genotype dosage.
+    2c. The correlation and P value is stored for each SNP.
+    2d. A number of permutation tests are performed, testing genotype dosage against a permutation of the
+        squared residuals. This is used to calculate a permutation P value for that SNP and if the perm P
+        value is smaller than the minimum P value seen for that permutation for previous SNPs, this new
+        value is stored.
+
+3. Once each SNP has been analysed we have a collection of permutation P values generated under the null
+hypothesis of no assocation. The parameters of the beta distribution best fitting this collection is estimated.
+
+4. We loop over all SNPs again, calculating P values adjusted for multiple testing both by comparing against the
+collection of minimum P values and against the beta distribution, writing out results.
+ */
+
 import calculation : betaParameters, corPvalue, correlation, Opts, rank,
   rank_discrete, transform, VarianceException;
 import read_data : Genotype, Phenotype, readGenotype;

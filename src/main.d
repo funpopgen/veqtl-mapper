@@ -19,6 +19,20 @@
 
 */
 
+/*
+
+This module wraps the other modules, calling the functions:
+
+1. parse the command line arguments
+2. Read the phenotype data for the correct job chunk
+3. Open a file to write the results to.
+4. Call the routines to run the analysis.
+
+It also contains the unit tests for runnning 2 sample analyses (standard
+and parent of origin).
+
+*/
+
 import arg_parse : Opts;
 import calculation : genPerms;
 import core.stdc.stdlib : exit;
@@ -62,7 +76,6 @@ else
   {
     stderr.writeln("Read ", phenotype.length, " phenotypes.");
   }
-
   auto permutations = genPerms(opts, phenotype[0].values.length);
 
   auto outFile = makeOut(opts);

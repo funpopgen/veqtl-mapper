@@ -1,4 +1,4 @@
-name "veqm"
+name "veqtl-mapper"
 description "veqtl-mapper: Mapping cis variance effects on expression."
 homepage "https://github.com/abrown25/CaVEMaN"
 authors "Andrew Brown"

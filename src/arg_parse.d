@@ -15,8 +15,7 @@ import core.stdc.stdlib : exit;
 import std.algorithm : canFind, countUntil, filter, joiner, map, setDifference,
   sort;
 import std.array : array, split;
-import std.conv : ConvException, to;
-import std.exception : enforce;
+import std.conv : to;
 import std.file : exists;
 import std.getopt : arraySep, defaultGetoptPrinter, getopt;
 import std.process : executeShell, pipeShell, Redirect, wait;

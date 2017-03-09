@@ -13,11 +13,10 @@ There is also a function that opens a file for writing the output and writing th
 
  */
 import arg_parse : Opts;
-import calculation : rank, transform;
 import core.stdc.stdlib : exit;
 import std.algorithm : countUntil, map, max;
 import std.array : array, split;
-import std.conv : ConvException, to;
+import std.conv : to;
 import std.exception : enforce;
 import std.format : format;
 import std.process : pipeShell, Redirect, wait;

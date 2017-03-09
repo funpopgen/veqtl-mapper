@@ -36,7 +36,7 @@ and parent of origin).
 import arg_parse : Opts;
 import calculation : genPerms;
 import core.stdc.stdlib : exit;
-import read_data : makeOut, Phenotype, readBed;
+import read_data : makeOut, readBed;
 import run_analysis : analyseData;
 import std.conv : to;
 import std.range : enumerate;

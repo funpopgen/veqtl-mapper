@@ -23,13 +23,13 @@ collection of minimum P values and against the beta distribution, writing out re
 import calculation : betaParameters, corPvalue, correlation, Opts, rank,
   rank_discrete, transform, VarianceException;
 import read_data : Genotype, Phenotype, readGenotype;
-import std.algorithm : count, map, max, sort, sum;
+import std.algorithm : count, map, max, sort;
 import std.array : array;
-import std.conv : ConvException, to;
+import std.conv : to;
 import std.format : format;
-import std.math : fabs, isNaN, pow, sqrt;
+import std.math : fabs, pow;
 import std.numeric : dotProduct;
-import std.range : chunks, enumerate, indexed, iota, SearchPolicy, zip;
+import std.range : chunks, indexed, iota, SearchPolicy, zip;
 import std.stdio : File, stderr, writeln;
 
 enum double EPSILON = 0.00000001; //comparison for X>=Y is done X > Y - epsilon

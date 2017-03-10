@@ -19,7 +19,7 @@ Genetic loci which are associated with the variance, rather than the mean, of a 
 
 veqtl-mapper binaries can be downloaded from here:
 
-[https://github.com/funpopgen/veqtl-mapper/releases/tag/v1.0](https://github.com/funpopgen/veqtl-mapper/releases/tag/v1.0)
+[https://github.com/funpopgen/veqtl-mapper/releases/tag/1.01](https://github.com/funpopgen/veqtl-mapper/releases/tag/1.01)
 
 The standard binary is called veqtl-mapper. Use veqtl-mapper_CentOS if there is an error referring to GLIBC.
 

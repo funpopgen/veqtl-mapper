@@ -21,7 +21,7 @@ head(results.veqtl[order(results.veqtl$BETA), ], 1)
 expression.veqtl <- as.vector(unlist(fread("grep 'ENSG00000075234.12' geuvadis.linc.protein.cov.50PC.bed | cut -f5-")))
 names(expression.veqtl) <- as.character(unlist(fread("head -1 geuvadis.linc.protein.cov.50PC.bed | cut -f5-", header = F)))
 
-snp.veqtl <- data.frame(fread("tabix -h snps.vcf.gz 22:46616732-46616732 | grep -v '##' | cut -f10-"))
+snp.veqtl <- data.frame(fread("tabix -h Genotypes.individuals_filtered.maf0.05.vcf.gz 22:46616732-46616732 | grep -v '##' | cut -f10-"))
 
 expression.veqtl <- expression.veqtl[names(expression.veqtl)%in%colnames(snp.veqtl)]
 stopifnot(sum(names(expression.veqtl)!=colnames(snp.veqtl)) == 0)
@@ -44,7 +44,7 @@ head(results.poeqtl[order(results.poeqtl$BETA), ])
 expression.poeqtl <- as.vector(unlist(fread("grep 'ENSG00000196126.6' geuvadis.linc.protein.cov.50PC.bed | cut -f5-")))
 names(expression.poeqtl) <- as.character(unlist(fread("head -1 geuvadis.linc.protein.cov.50PC.bed | cut -f5-", header = F)))
 
-snp.poeqtl <- data.frame(fread("tabix -h snps.vcf.gz 6:32454727-32454727 | grep -v '##' | cut -f10-"))
+snp.poeqtl <- data.frame(fread("tabix -h Genotypes.individuals_filtered.maf0.05.vcf.gz 6:32454727-32454727 | grep -v '##' | cut -f10-"))
 
 expression.poeqtl <- expression.poeqtl[names(expression.poeqtl)%in%colnames(snp.poeqtl)]
 stopifnot(sum(names(expression.poeqtl)!=colnames(snp.poeqtl)) == 0)

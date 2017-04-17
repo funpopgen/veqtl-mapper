@@ -81,7 +81,7 @@ Running the commands described above will produce 200 results files, results1-re
 
 To extract the most significant association for each gene, run the following command:
 
-    cat <(head -1 results.all) <(tail -n+2 results.all |  \
+    (head -1 results.all; tail -n+2 results.all |  \
         awk '{if (best[$1]=="" || p_best[$1] > $7) {best[$1] = $0; p_best[$1]=$7}} \
 	    END{for (var in best) print best[var]}') > results.best
 

@@ -1,6 +1,6 @@
 # veqtl-mapper
 
-Genetic loci which are associated with the variance, rather than the mean, of a trait are known as v-eQTL. These can indicate the presence of genetic interactions, gene-environment interactions, parent of origin effects, linkage with mean effect variants, or canalisation. This package provides a tool for discovering these loci affecting molecular phenotypes.
+Genetic loci which are associated with the variance, rather than the mean, of a trait are known as v-eQTL. These can indicate the presence of genetic interactions, gene-environment interactions, parent of origin effects, linkage with mean effect variants, or canalisation. This package provides a tool for discovering these loci affecting molecular phenotypes. A paper accompanying this software can be found [here](https://doi.org/10.1093/bioinformatics/btx273).
 
 ***
 

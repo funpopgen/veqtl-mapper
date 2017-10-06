@@ -1,31 +1,43 @@
-LDC = ldc
-DMD = dmd
+LDC := ldc
+DMD := dmd
 
-DSOURCES = src/main.d src/arg_parse.d src/read_data.d src/calculation.d src/run_analysis.d
+D_SOURCES := ${wildcard src/*.d}
 
-ldc : ${DSOURCES} src/beta.o views/commit
-	${LDC} -release -enable-inlining -O -w -oq -Jviews ${DSOURCES} src/beta.o -of="bin/veqtl-mapper"
-	rm -f bin/*.o src/*.o *.o
+CHECK_LDC := ${shell command ${LDC} | grep -i 'ldc' 2> /dev/null}
+CHECK_DMD := ${shell command ${DMD} | grep -i 'dmd' 2> /dev/null}
 
-test : ${DSOURCES} src/beta.o views/commit
-	${LDC} -d-debug -g -unittest -w -Jviews ${DSOURCES} src/beta.o -of="unittest"
+ifneq (${CHECK_LDC},)
+	COMPILER := ${LDC}
+	RELEASE_FLAGS := -Jviews -release -enable-inlining -O -w -oq
+	DEBUG_FLAGS := -Jviews -d-debug -g -unittest -w
+else
+	COMPILER := ${DMD}
+	RELEASE_FLAGS := -Jviews -release -inline -O -noboundscheck 
+	DEBUG_FLAGS := -Jviews -debug -g -unittest -w
+endif
+
+ifeq (${CHECK_LDC},)
+ifeq (${CHECK_DMD},)
+${error No D compiler found at ${LDC} or ${DMD}}
+endif
+endif
+
+CLEAN_OBJECTS := rm -f src/*.o bin/*.o *.o
+
+bin/veqtl-mapper :	${D_SOURCES} src/beta.o views/commit
+	${COMPILER} ${RELEASE_FLAGS} ${D_SOURCES} src/beta.o -of="bin/veqtl-mapper"
+	${CLEAN_OBJECTS}
+
+test :	${D_SOURCES} src/beta.o views/commit
+	${COMPILER} ${DEBUG_FLAGS} ${D_SOURCES} src/beta.o -of="unittest"
 	./unittest
-	rm -f bin/*.o unittest src/*.o *.o
+	${CLEAN_OBJECTS} unittest
 
-dmd : ${DSOURCES} src/beta.o views/commit
-	${DMD} -O -release -noboundscheck -inline -Jviews ${DSOURCES} src/beta.o -ofbin/veqtl-mapper
-	rm -f bin/*.o src/*.o *.o
-
-dmd_test : ${DSOURCES} src/beta.o views/commit
-	${DMD} -debug -g -unittest -w -Jviews ${DSOURCES} src/beta.o -ofunittest
-	./unittest
-	rm -f bin/*.o unittest src/*.o *.o
-
-views/commit : ${DSOURCES} src/beta.c
+views/commit :	${D_SOURCES} src/beta.c
 	mkdir -p views
 	git rev-parse --short HEAD > views/commit
 
-.PHONY : test ldc dmd dmd_test clean install
+.PHONY : test clean
 
 clean :
-	rm -f bin/*.o src/*.o *.o bin/veqtl-mapper
+	${CLEAN_OBJECTS} bin/veqtl-mapper

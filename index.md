@@ -124,23 +124,19 @@ This should create a folder called veqtl-mapper. Inside this folder is a file ca
 
 Then, download a D compiler from either here: [https://github.com/ldc-developers/ldc/releases](https://github.com/ldc-developers/ldc/releases) or here: [http://dlang.org/dmd-linux.html](http://dlang.org/dmd-linux.html) (ldc produces faster software, my experience is that dmd works better on older operating systems). Decompress the downloaded file, then edit either the first or second line of the makefile in the veqtl-mapper folder so that it contains the full path to the relevant compiler, i.e. either:
 
-**DMD = /path/to/dmd2/linux/bin64/dmd**
+**DMD := /path/to/dmd2/linux/bin64/dmd**
 
 or
 
-**LDC = /path/to/ldc2-1.1.0-beta2-linux-x86_64/bin/ldc2**
+**LDC := /path/to/ldc2-1.1.0-beta2-linux-x86_64/bin/ldc2**
 
 ### Building the software
 
-Now to compile, if you downloaded the ldc compiler, run the following command:
+Now, to compile, run the following command:
 
     make test && make
 
-For dmd run:
-
-    make dmd_test && make dmd
-
-Now the veqtl-mapper binary should be within the bin folder in the veqtl-mapper directory, running
+The veqtl-mapper binary should be within the bin folder in the veqtl-mapper directory, running
 
      ./bin/veqtl-mapper --help
 

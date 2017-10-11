@@ -36,6 +36,7 @@ class Opts
   uint jobNumber = 0;
   //permutation numbers and seeds
   uint[] perms;
+  bool normal = false;
   //file names
   string vcf = "";
   string bed = "";
@@ -62,6 +63,7 @@ class Opts
 			  "job-number", "Split the analysis into a number of smaller runs which can run in parallel on a cluster. This option specifies which of the sub-analyses should be run.\n", &jobNumber,
 			  "het", "Tests for variance differences in the heterozygous relative to homozygous groups, an indication of parent of origin effects.\n", &het,
 			  "perm", "Specify number of permutations, with optional seed. One following number indicates the number of permutations, two comma separated numbers gives the number of permutations and the seed.\n", &perms,
+			  "normal", "Map the phenotype onto a normal distribution before analysis.\n", &normal,
 			  "window", "The size in base pairs of the cis window around the transcription start site of the gene [1,000,000].\n", &window,
 			  "noheader", "Suppress writing of header line.\n", &noheader,
 			  "nocheck", "Do not use the header lines to match genotype and phenotype, assume samples already match.\n", &nocheck,

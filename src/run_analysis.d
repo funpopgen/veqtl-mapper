@@ -23,7 +23,7 @@ collection of minimum P values and against the beta distribution, writing out re
 import calculation : betaParameters, corPvalue, correlation, Opts, rank,
   rank_discrete, transform, VarianceException;
 import read_data : Genotype, Phenotype, readGenotype;
-import std.algorithm : count, map, max, sort;
+import std.algorithm : count, map, makeIndex, max, sort;
 import std.array : array;
 import std.conv : to;
 import std.format : format;
@@ -102,6 +102,8 @@ pure nothrow extern (C)
   int gsl_multifit_linear_residuals(const gsl_matrix* X, const gsl_vector* y,
       const gsl_vector* c, gsl_vector* r);
 
+  double gsl_cdf_ugaussian_Pinv(double P);
+
 }
 void analyseData(ref Phenotype phenotype, ref size_t[] perms, ref File outFile,
     const ref Opts opts, ref size_t[] orderBuffer)
@@ -120,6 +122,12 @@ void mapVeQTL(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
     ref Genotype[] genotypes, ref File outFile, ref size_t[] orderBuffer)
 {
   immutable size_t nInd = phenotype.values.length;
+
+  if (opts.normal)
+  {
+    normalise(phenotype.values);
+  }
+
   immutable nPerm = opts.perms[0];
 
   auto distance = new double[](nInd);
@@ -225,4 +233,74 @@ void mapVeQTL(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
   gsl_vector_free(coefficients);
   gsl_vector_free(residuals);
 
+}
+
+void normalise(ref double[] residuals)
+{
+  size_t[] orderBuffer = new size_t[](residuals.length);
+
+  makeIndex(residuals, orderBuffer);
+
+  size_t count = 0;
+  double previous = residuals[orderBuffer[count]];
+  residuals[orderBuffer[0]] = count.to!double;
+
+  foreach (e; orderBuffer[1 .. $])
+  {
+    if (residuals[e] > previous)
+    {
+      count++;
+    }
+    previous = residuals[e];
+    residuals[e] = count.to!double;
+  }
+
+  double[] inverseNormal = iota(count + 1).map!(
+      a => gsl_cdf_ugaussian_Pinv(1.0 * (a + 1) / (count + 2)).to!double).array;
+
+  foreach (ref e; residuals)
+    e = inverseNormal[e.to!size_t];
+}
+
+@system unittest
+{
+  import std.math : approxEqual;
+
+  double[] residuals = [1.0, 4, 4.5, 2, 1, 1, 1];
+  double[] resultsFromR = [
+    -0.8416212, 0.2533471, 0.8416212, -0.2533471, -0.8416212, -0.8416212, -0.8416212
+  ];
+
+  normalise(residuals);
+
+  assert(approxEqual(residuals, resultsFromR));
+
+  residuals = [-1.8770457188144, 0.211096107415374, -0.56072969755841,
+    1.11564407213545, 1.99740513952311, -0.0887294570420509,
+    -0.610132655912594, -0.378524183553565, -2.41530373819483,
+    -0.186576831967272, -0.577841481720977, -0.760309403824646,
+    0.500262066216114, -0.0672838126269592, -0.438653775896711,
+    -0.119212500084674, 1.37251408213678, 2.24643382422438, -1.04865674605464, 0.649746098602992];
+
+  resultsFromR = [-1.30917171678578, 0.430727299295458, -0.430727299295457,
+    0.876142849246841, 1.30917171678578, 0.180012369792705,
+    -0.712443032389489, -0.180012369792705, -1.66839119394708,
+    -0.0597170997853229, -0.565948821932863, -0.876142849246841,
+    0.565948821932863, 0.302980448056207, -0.302980448056207,
+    0.0597170997853226, 1.06757052387814, 1.66839119394708, -1.06757052387814, 0.712443032389489];
+
+  normalise(residuals);
+  assert(approxEqual(residuals, resultsFromR));
+
+  residuals = [6, 3, 2, 6, 9, 3, 1, 8, 3, 5, 3, 2, 4, 4, 1, 4, 8, 6, 2, 10];
+
+  resultsFromR = [0.2533471031358, -0.524400512708041, -0.841621233572914,
+    0.2533471031358, 0.841621233572914, -0.524400512708041,
+    -1.2815515655446, 0.524400512708041, -0.524400512708041, 0,
+    -0.524400512708041, -0.841621233572914, -0.2533471031358,
+    -0.2533471031358, -1.2815515655446, -0.2533471031358, 0.524400512708041,
+    0.2533471031358, -0.841621233572914, 1.2815515655446];
+
+  normalise(residuals);
+  assert(approxEqual(residuals, resultsFromR));
 }

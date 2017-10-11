@@ -161,4 +161,20 @@ else
   assert(toHexString(hash.finish) == "600B468E56A76D97B2B6CB1775A431F47ED4D65E");
   stderr.writeln("Passed: heterozygote test.");
 
+  const auto optsNormal = new Opts(("./bin/veqtl-mapper --normal --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4 --out " ~ testFile)
+      .split);
+
+  outFile = makeOut(optsNormal);
+
+  foreach (ref e; phenotype)
+  {
+    analyseData(e, permutations, outFile, optsNormal, orderBuffer);
+  }
+
+  outFile.close;
+
+  hash.start;
+  put(hash, File(testFile).byChunk(1024));
+  assert(toHexString(hash.finish) == "194CF372ACA1414B3927238EEA35324E9C40BE16");
+  stderr.writeln("Passed: normal test.");
 }

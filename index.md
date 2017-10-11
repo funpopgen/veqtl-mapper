@@ -56,7 +56,7 @@ To submit a job array, with a bed file of 9,995 genes, where each job analyses 5
          "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
          --job-number \$LSB_JOBINDEX --out results\$LSB_JOBINDEX"
 
-In addition, the `--perm` option allows you to set the number of permutations used in the analysis, and optionally a seed. The --normal flag can also be passed to map phenotype data onto a normal distribution to remove mean-variance effects and outlier driven false positives.
+In addition, the `--perm` option allows you to set the number of permutations used in the analysis, and optionally a seed. The `--normal` flag can also be passed to map phenotype data onto a normal distribution to remove mean-variance effects and outlier driven false positives.
 
 Each results file should look like this:
 

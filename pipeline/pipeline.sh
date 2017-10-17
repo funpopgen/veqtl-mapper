@@ -9,6 +9,10 @@ done
 
 wget ftp://jungle.unige.ch/veqtl_paper/geuvadis.linc.protein.cov.50PC.bed
 
+# Create a list of all individuals with RNA-seq data from Geuvadis (462 individuals)
+
+head -1 geuvadis.linc.protein.cov.50PC.bed | sed 's/\t/\n/g' | tail -n+5 > Samples
+
 # Subset the vcf files to individuals with genotype data, select variants with MAF > 0.05 and concatenate all chromosomes together
 bsub -o out.vcf "bcftools concat ALL.chr*.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz -Ou | bcftools view --force-samples -S Samples -Ou | bcftools view --min-af 0.05:minor -Oz -o Genotypes.individuals_filtered.maf0.05.vcf.gz && bcftools index Genotypes.individuals_filtered.maf0.05.vcf.gz"
 

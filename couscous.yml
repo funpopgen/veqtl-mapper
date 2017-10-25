@@ -1,0 +1,23 @@
+template:
+    url: https://github.com/CouscousPHP/Template-Light
+
+github:
+    user: funpopgen
+    repo: veqtl-mapper
+
+title: veqtl-mapper
+subTitle: Variance associated loci mapping for molecular phenotypes
+
+menu:
+    items:
+        github:
+            text: View page on github
+            # You can use relative urls
+            absoluteUrl: https://github.com/funpopgen/veqtl-mapper
+        download:
+            text: Download page
+            # You can use relative urls
+            absoluteUrl: https://github.com/funpopgen/veqtl-mapper/releases/tag/1.01
+        paper:
+            text: Paper
+            absoluteUrl: https://doi.org/10.1093/bioinformatics/btx273

@@ -1,9 +1,0 @@
-The pipeline to run the analysis consists of three scripts. Running the commands in "pipeline.sh", followed by the commands from "Figures.R" in an R session will produce all the results from the accompanying paper.
-
-pipeline.sh : Downloads expression and genotype data files, filters the genotype files, runs the analysis and concatenates the results, extracting the most significant hit per gene. SOME COMMANDS ARE WRITTEN FOR USE ON AN LSF CLUSTER, FOR OTHER CLUSTER TYPES EDIT THE LINES STARTING WITH "bsub" TO THE APPROPRIATE COMMAND FOR THAT CLUSTER.
-
-filter_snps.py : Filters the vcf file including only variants with at least 50 individuals in the three genotype groups: minor allele homozygote, heterozygote and major allele homozygote. This script is called from pipeline.sh.
-
-Figures.R : Once the analysis has been run, this script produces the results and figures from the accompanying paper. REQUIRES THE FOLLOWING LIBRARIES TO BE INSTALLED: data.table, ggplot2, qvalue.
-
-More information about the software is available on the website: https://funpopgen.github.io/veqtl-mapper/

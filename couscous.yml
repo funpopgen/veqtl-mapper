@@ -1,4 +1,4 @@
-baseUrl: https://github.io/funpopgen/veqtl-mapper
+baseUrl: https://funpopgen.github.io/veqtl-mapper
 
 template:
     url: https://github.com/ovac/ovac-couscous-template

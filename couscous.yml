@@ -16,11 +16,11 @@ menu:
             name: Contents
             items:
                 home:
-                    text: home
+                    text: Home
                     relativeUrl:
                 contents:
                     text: Contents
-                    relativeUrl: (#contents)
+                    relativeUrl:
         links:
             name: Links
             items:

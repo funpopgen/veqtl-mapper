@@ -110,7 +110,7 @@ Variance effects can be caused by SNPs being in partial linkage disequilibrium w
 
      bsub -o out -J"parent[1-200]" \
      "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
-     --job-number \$LSB_JOBINDEX --eqtl eqtl_file --out results\$LSB_JOBINDEX"</code></pre>
+     --job-number \$LSB_JOBINDEX --eqtl eqtl_file --out results\$LSB_JOBINDEX"
 
 ## Controlling for covariates
 
@@ -118,7 +118,7 @@ A file containing a set of covariates can also be passed. This should be a white
 
       bsub -o out -J"parent[1-200]" \
      "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
-     --job-number \$LSB_JOBINDEX --cov covariates_file --out results\$LSB_JOBINDEX"</code></pre>
+     --job-number \$LSB_JOBINDEX --cov covariates_file --out results\$LSB_JOBINDEX"
 
 ***
 

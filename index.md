@@ -11,7 +11,9 @@ Genetic loci which are associated with the variance, rather than the mean, of a 
 3. [Mapping v-eQTL](#mapping-v-eqtl)
 4. [Mapping variance effects related to parent of origin eQTL](#mapping-variance-effects-related-to-parent-of-origin-eqtl)
 5. [Processing results](#processing-results)
-6. [Building from source](#building-from-source)
+6. [Controlling for eQTLs](#controlling-for-eqtls)
+7. [Controlling for covariates](#controlling-for-covariates)
+8. [Building from source](#building-from-source)
 
 ***
 
@@ -101,7 +103,23 @@ To write out this table, run:
     write.table(results, file = "results.adjusted", col.names = T, row.names = F, sep = '\t', quote = F)
 
 The final column in results.adjusted now contains Q values, which sets a threshold for estimating the false discovery rate while accounting for all SNPs and genes tested.
-    
+
+## Controlling for eQTLs
+
+Variance effects can be caused by SNPs being in partial linkage disequilibrium with an eQTL. To control for these effects, you can pass a list of eQTLs to remove when mapping v-eQTLs. This list should be a whitespace separated file, one row per eQTL, with 5 columns: gene, chromosome, base pair position, reference allele and alt allele. The file is passed with the `--eqtl` flag:
+
+     bsub -o out -J"parent[1-200]" \
+     "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
+     --job-number \$LSB_JOBINDEX --eqtl eqtl_file --out results\$LSB_JOBINDEX"</code></pre>
+
+## Controlling for covariates
+
+A file containing a set of covariates can also be passed. This should be a whitespace delimited file, with a header with the subject IDs and one row per individual. All covariates should be numeric. The file is passed with the `--cov` flag:
+
+      bsub -o out -J"parent[1-200]" \
+     "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
+     --job-number \$LSB_JOBINDEX --cov covariates_file --out results\$LSB_JOBINDEX"</code></pre>
+
 ***
 
 ## Building from source

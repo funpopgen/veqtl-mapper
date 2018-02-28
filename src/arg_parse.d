@@ -270,7 +270,7 @@ class Opts
   }
 }
 
-static immutable string versionString = "veqtl-mapper  -  Variance association mapping for molecular phenotypes version 1.0.1";
+static immutable string versionString = "veqtl-mapper  -  Variance association mapping for molecular phenotypes version 1.0.2";
 static immutable string commitString = chomp(cast(string) import("commit"));
 
 void giveHelp(immutable string quitString)

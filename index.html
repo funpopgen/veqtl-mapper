@@ -41,38 +41,8 @@
                             </a>
                         </li>
                                             <li class="">
-                            <a href="https://funpopgen.github.io/veqtl-mapper/#contents">
+                            <a href="https://funpopgen.github.io/veqtl-mapper/">
                                 Contents
-                            </a>
-                        </li>
-                                            <li class="">
-                            <a href="https://funpopgen.github.io/veqtl-mapper/#downloading-veqtl-mapper">
-                                Downloading veqtl-mapper
-                            </a>
-                        </li>
-                                            <li class="">
-                            <a href="https://funpopgen.github.io/veqtl-mapper/#input-data-formats">
-                                Input data formats
-                            </a>
-                        </li>
-                                            <li class="">
-                            <a href="https://funpopgen.github.io/veqtl-mapper/#mapping-v-eqtl">
-                                Mapping v-eQTL
-                            </a>
-                        </li>
-                                            <li class="">
-                            <a href="https://funpopgen.github.io/veqtl-mapper/#mapping-variance-effects-related-to-parent-of-origin-eqtl">
-                                Mapping variance effects related to parent of origin eQTL
-                            </a>
-                        </li>
-                                            <li class="">
-                            <a href="https://funpopgen.github.io/veqtl-mapper/#processing-results">
-                                Processing results
-                            </a>
-                        </li>
-                                            <li class="">
-                            <a href="https://funpopgen.github.io/veqtl-mapper/#building-from-source">
-                                Building from source
                             </a>
                         </li>
                                     </ul>
@@ -123,6 +93,8 @@
 <li><a href="#mapping-v-eqtl">Mapping v-eQTL</a></li>
 <li><a href="#mapping-variance-effects-related-to-parent-of-origin-eqtl">Mapping variance effects related to parent of origin eQTL</a></li>
 <li><a href="#processing-results">Processing results</a></li>
+<li><a href="#controlling-for-eqtls">Controlling for eQTLs</a></li>
+<li><a href="#controlling-for-covariates">Controlling for covariates</a></li>
 <li><a href="#building-from-source">Building from source</a></li>
 </ol>
 <hr />
@@ -172,6 +144,16 @@ results &lt;- data.frame(results, Qvalues = qvalue(results$BETA)$qvalues)</code>
 <p>To write out this table, run:</p>
 <pre><code>write.table(results, file = "results.adjusted", col.names = T, row.names = F, sep = '\t', quote = F)</code></pre>
 <p>The final column in results.adjusted now contains Q values, which sets a threshold for estimating the false discovery rate while accounting for all SNPs and genes tested.</p>
+<h2 id="controlling-for-eqtls">Controlling for eQTLs</h2>
+<p>Variance effects can be caused by SNPs being in partial linkage disequilibrium with an eQTL. To control for these effects, you can pass a list of eQTLs to remove when mapping v-eQTLs. This list should be a whitespace separated file, one row per eQTL, with 5 columns: gene, chromosome, base pair position, reference allele and alt allele. The file is passed with the <code>--eqtl</code> flag:</p>
+<pre><code> bsub -o out -J"parent[1-200]" \
+ "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
+ --job-number \$LSB_JOBINDEX --eqtl eqtl_file --out results\$LSB_JOBINDEX"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<h2 id="controlling-for-covariates">Controlling for covariates</h2>
+<p>A file containing a set of covariates can also be passed. This should be a whitespace delimited file, with a header with the subject IDs and one row per individual. All covariates should be numeric. The file is passed with the <code>--cov</code> flag:</p>
+<pre><code>  bsub -o out -J"parent[1-200]" \
+ "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
+ --job-number \$LSB_JOBINDEX --cov covariates_file --out results\$LSB_JOBINDEX"&lt;/code&gt;&lt;/pre&gt;</code></pre>
 <hr />
 <h2 id="building-from-source">Building from source</h2>
 <p>This requires a D compiler and a version of the GNU scientific library to be installed. Running the command:</p>
@@ -207,5 +189,10 @@ results &lt;- data.frame(results, Qvalues = qvalue(results$BETA)$qvalues)</code>
         });
     });
     </script>
-    </body>
+
+            
+        
+        
+    
+</body>
 </html>

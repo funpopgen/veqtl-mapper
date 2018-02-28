@@ -210,7 +210,6 @@ auto readCovs(const Opts opts)
 auto readEqtls(string eqtlFilename, ref Phenotype[] phenotypes)
 {
   string[][string] eqtlList;
-
   foreach (e; phenotypes)
     eqtlList[e.geneName] = [];
 

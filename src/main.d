@@ -191,4 +191,63 @@ else
   put(hash, File(testFile).byChunk(1024));
   assert(toHexString(hash.finish) == "194CF372ACA1414B3927238EEA35324E9C40BE16");
   stderr.writeln("Passed: normal test.");
+
+  const auto optsEqtl = new Opts(("./bin/veqtl-mapper --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4 --eqtl data/eQTL --out " ~ testFile)
+      .split);
+
+  phenotype = readBed(optsEqtl);
+
+  readEqtls(optsEqtl.eqtl, phenotype);
+
+  outFile = makeOut(optsEqtl);
+
+  foreach (ref e; phenotype)
+  {
+    analyseData(e, permutations, outFile, optsEqtl, orderBuffer, cov);
+  }
+
+  outFile.close;
+
+  hash.start;
+  put(hash, File(testFile).byChunk(1024));
+  assert(toHexString(hash.finish) == "FB61D77C8BFAFEBEDAA7DE48921BCDDD50068901");
+  stderr.writeln("Passed: eQTL test.");
+
+  const auto optsCov = new Opts(("./bin/veqtl-mapper --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4 --eqtl data/eQTL --cov data/cov --out " ~ testFile)
+      .split);
+
+  outFile = makeOut(optsCov);
+  cov = readCovs(optsCov);
+
+  foreach (ref e; phenotype)
+  {
+    analyseData(e, permutations, outFile, optsEqtl, orderBuffer, cov);
+  }
+
+  outFile.close;
+
+  hash.start;
+  put(hash, File(testFile).byChunk(1024));
+  assert(toHexString(hash.finish) == "5BE0E57D82CFA2B29319B12A89257D192D9150DD");
+  stderr.writeln("Passed: single covariate test.");
+
+  const auto optsCovFull = new Opts(("./bin/veqtl-mapper --bed data/phenotype.bed --job-number 1 --genes 10 --vcf data/genotype.vcf.gz --perm 10000,4 --eqtl data/eQTL --cov data/cov_full --out " ~ testFile)
+      .split);
+
+  cov.length = 0;
+  cov = readCovs(optsCovFull);
+
+  outFile = makeOut(optsCovFull);
+
+  foreach (ref e; phenotype)
+  {
+    analyseData(e, permutations, outFile, optsEqtl, orderBuffer, cov);
+  }
+
+  outFile.close;
+
+  hash.start;
+  put(hash, File(testFile).byChunk(1024));
+  assert(toHexString(hash.finish) == "59C4BAF6199F5B015B13C710A63DC6AA9DA850CE");
+  stderr.writeln("Passed: multiple covariates test.");
 }

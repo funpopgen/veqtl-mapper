@@ -41,12 +41,15 @@ class Opts
   string vcf = "";
   string bed = "";
   string output = "";
+  string eqtl = "";
+  string cov = "";
   size_t window = 1_000_000;
   bool gt = false;
   long loc = 0;
   bool nocheck = false;
   size_t[] genotypeLocations;
   size_t[] phenotypeLocations;
+  size_t[] covLocations;
 
   bool het = false;
 
@@ -64,6 +67,8 @@ class Opts
 			  "het", "Tests for variance differences in the heterozygous relative to homozygous groups, an indication of parent of origin effects.\n", &het,
 			  "perm", "Specify number of permutations, with optional seed. One following number indicates the number of permutations, two comma separated numbers gives the number of permutations and the seed.\n", &perms,
 			  "normal", "Map the phenotype onto a normal distribution before analysis.\n", &normal,
+			  "eqtl", "Control for a set of mapped eQTLs to remove v-eQTL caused by haplotype effects.\n", &eqtl,
+			  "cov", "Control for covariates.\n", &cov,
 			  "window", "The size in base pairs of the cis window around the transcription start site of the gene [1,000,000].\n", &window,
 			  "noheader", "Suppress writing of header line.\n", &noheader,
 			  "nocheck", "Do not use the header lines to match genotype and phenotype, assume samples already match.\n", &nocheck,
@@ -225,6 +230,41 @@ class Opts
       {
         stderr.writeln(phenotypeIds.indexed(setDifference(iota(phenotypeIds.length),
             phenotypeLocations.dup.sort!())).joiner(", "), " dropped from phenotype file.");
+      }
+
+      if (cov != "")
+      {
+        string[] covIds;
+
+        try
+        {
+          covIds = File(cov).readln.chomp.split;
+          if (verbose)
+          {
+            stderr.writeln(covIds.length, " individuals present in covariates file.");
+          }
+
+          auto temp = genotypeIds.indexed(genotypeLocations).map!(a => covIds.countUntil(a)).array;
+          if (temp.canFind(-1))
+          {
+            stderr.writefln("Individuals in genotype and phenotype file, but not in covariate file. Missing individuals are %-(%s, %).",
+                genotypeIds.indexed(genotypeLocations).filter!(a => !covIds.canFind(a)));
+            exit(1);
+          }
+
+          covLocations = temp.to!(size_t[]);
+
+          if (verbose && covLocations.length != covIds.length)
+          {
+            stderr.writefln("%-(%s, %) dropped from covariates file.",
+                covIds.indexed(setDifference(iota(covIds.length), covLocations.dup.sort!())));
+          }
+        }
+        catch (Exception e)
+        {
+          stderr.writeln("Failed to read covariate IDs. ", e.msg);
+          exit(1);
+        }
       }
     }
   }

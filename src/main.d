@@ -36,7 +36,7 @@ and parent of origin).
 import arg_parse : Opts;
 import calculation : genPerms;
 import core.stdc.stdlib : exit;
-import read_data : makeOut, readBed;
+import read_data : makeOut, readBed, readCovs, readEqtls;
 import run_analysis : analyseData;
 import std.conv : to;
 import std.range : enumerate;
@@ -72,6 +72,11 @@ else
 
   auto phenotype = readBed(opts);
 
+  if (opts.eqtl != "")
+  {
+    readEqtls(opts.eqtl, phenotype);
+  }
+
   if (opts.verbose)
   {
     stderr.writeln("Read ", phenotype.length, " phenotypes.");
@@ -82,6 +87,13 @@ else
 
   auto orderBuffer = new size_t[](phenotype[0].values.length);
 
+  double[] covariates;
+
+  if (opts.cov != "")
+  {
+    covariates = readCovs(opts);
+  }
+
   foreach (ref e; phenotype.enumerate)
   {
     if (opts.verbose)
@@ -89,7 +101,7 @@ else
       stderr.writeln("Analysing gene ", e[1].geneName, " (", e[0] + 1,
           " out of ", phenotype.length, "). TSS is ", e[1].chromosome, ":", e[1].location, ".");
     }
-    analyseData(e[1], permutations, outFile, opts, orderBuffer);
+    analyseData(e[1], permutations, outFile, opts, orderBuffer, covariates);
   }
 }
 

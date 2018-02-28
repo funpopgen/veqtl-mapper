@@ -23,14 +23,16 @@ collection of minimum P values and against the beta distribution, writing out re
 import calculation : betaParameters, corPvalue, correlation, Opts, rank,
   rank_discrete, transform, VarianceException;
 import read_data : Genotype, Phenotype, readGenotype;
-import std.algorithm : count, map, makeIndex, max, sort;
-import std.array : array;
+import std.algorithm : canFind, count, filter, joiner, map, makeIndex,
+  max, sort;
+import std.array : array, replace;
 import std.conv : to;
 import std.format : format;
 import std.math : fabs, pow;
 import std.numeric : dotProduct;
-import std.range : chunks, indexed, iota, SearchPolicy, zip;
+import std.range : chunks, enumerate, indexed, iota, SearchPolicy;
 import std.stdio : File, stderr, writeln;
+import std.string : strip;
 
 enum double EPSILON = 0.00000001; //comparison for X>=Y is done X > Y - epsilon
 
@@ -106,7 +108,7 @@ pure nothrow extern (C)
 
 }
 void analyseData(ref Phenotype phenotype, ref size_t[] perms, ref File outFile,
-    const ref Opts opts, ref size_t[] orderBuffer)
+    const ref Opts opts, ref size_t[] orderBuffer, ref double[] cov)
 {
   auto genotype = readGenotype(opts, phenotype.chromosome, phenotype.location, phenotype.geneName);
 
@@ -115,33 +117,71 @@ void analyseData(ref Phenotype phenotype, ref size_t[] perms, ref File outFile,
     stderr.writeln("Extracted ", genotype.length, " usable genotypes.");
   }
 
-  mapVeQTL(opts, perms, phenotype, genotype, outFile, orderBuffer);
+  mapVeqtl(opts, perms, phenotype, genotype, outFile, orderBuffer, cov);
 }
 
-void mapVeQTL(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
-    ref Genotype[] genotypes, ref File outFile, ref size_t[] orderBuffer)
+void mapVeqtl(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
+    ref Genotype[] genotypes, ref File outFile, ref size_t[] orderBuffer, ref double[] cov)
 {
   immutable size_t nInd = phenotype.values.length;
+
+  immutable nPerm = opts.perms[0];
+
+  auto distance = new double[](nInd);
 
   if (opts.normal)
   {
     normalise(phenotype.values);
   }
 
-  immutable nPerm = opts.perms[0];
+  double[] eqtlValues;
 
-  auto distance = new double[](nInd);
+  foreach (ref genotype; genotypes)
+  {
+    if (canFind(phenotype.eqtls, genotype.snpId))
+    {
+      eqtlValues ~= genotype.values;
+    }
+  }
 
-  auto covariates = gsl_matrix_alloc(nInd, 3);
+  auto eqtlCount = eqtlValues.length / nInd;
+
+  if (opts.verbose)
+  {
+    if (eqtlCount != phenotype.eqtls.length)
+    {
+      auto missingEqtls = phenotype.eqtls.filter!(a => !genotypes.canFind!((Genotype x,
+          string y) => x.snpId == y)(a)).joiner(", ").array.strip.replace("\t", "_");
+      stderr.writefln!"Warning: for gene %s only %d out of %d eQTLs are present in genotype file. %s is missing."(
+          phenotype.geneName, eqtlCount, phenotype.eqtls.length, missingEqtls);
+    }
+  }
+
+  auto covCount = cov.length / nInd;
+
+  auto covariates = gsl_matrix_alloc(nInd, 3 + eqtlCount + covCount);
+
   gsl_matrix_set_all(covariates, 1.0);
 
-  auto outcome = gsl_vector_alloc(nInd);
-  foreach (i; 0 .. nInd)
-    gsl_vector_set(outcome, i, phenotype.values[i]);
+  foreach (i, j; eqtlValues.enumerate)
+  {
+    gsl_matrix_set(covariates, i % nInd, i / nInd + 3, j);
+  }
 
-  auto workSpace = gsl_multifit_linear_alloc(nInd, 3);
-  auto corrMat = gsl_matrix_alloc(3, 3);
-  auto coefficients = gsl_vector_alloc(3);
+  foreach (i, j; cov.enumerate)
+  {
+    gsl_matrix_set(covariates, i % nInd, i / nInd + 3 + eqtlCount, j);
+  }
+
+  auto outcome = gsl_vector_alloc(nInd);
+  foreach (i, j; phenotype.values.enumerate)
+  {
+    gsl_vector_set(outcome, i, j);
+  }
+
+  auto workSpace = gsl_multifit_linear_alloc(nInd, 3 + eqtlCount + covCount);
+  auto corrMat = gsl_matrix_alloc(3 + eqtlCount + covCount, 3 + eqtlCount + covCount);
+  auto coefficients = gsl_vector_alloc(3 + eqtlCount + covCount);
   double chisq;
   auto residuals = gsl_vector_alloc(nInd);
 
@@ -185,7 +225,7 @@ void mapVeQTL(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
       auto simplePerm = map!(a => fabs(dotProduct(genotype.values, distance.indexed(a))))(chunks(perms,
           nInd)).array;
 
-      foreach (e; zip(iota(nPerm), simplePerm))
+      foreach (e; simplePerm.enumerate)
       {
         maxCor[e[0]] = max(maxCor[e[0]], e[1]);
       }

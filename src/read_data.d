@@ -37,6 +37,7 @@ struct Phenotype
   string chromosome;
   size_t location;
   double[] values;
+  string[] eqtls;
 
   this(const char[] line, const size_t[] indices)
   {
@@ -59,7 +60,7 @@ struct Genotype
   this(const char[] line, const size_t[] indices, const long loc, const bool gt)
   {
     auto splitLine = line.split;
-    snpId = format("\t%-(%s\t%)\t", splitLine[0 .. 4]);
+    snpId = format!"\t%-(%s\t%)\t"(splitLine[0 .. 4]);
     values = splitLine[4 .. $].indexed(indices).map!(a => getDosage(a, loc, gt)).array;
     if (countUntil!"a != b"(values, values[0]) == -1)
       throw new InputException("");
@@ -181,6 +182,62 @@ auto readGenotype(const Opts opts, string chrom, size_t location, string geneNam
   }
 
   return genotype;
+}
+
+auto readCovs(const Opts opts)
+{
+  double[] covariates;
+
+  File covFile;
+  try
+  {
+    covFile = File(opts.cov);
+  }
+  catch (Exception e)
+  {
+    stderr.writeln(e.msg);
+    exit(1);
+  }
+
+  covFile.readln;
+  foreach (line; covFile.byLine)
+  {
+    covariates ~= line.split.indexed(opts.covLocations).map!(a => a.to!double).array;
+  }
+  return covariates;
+}
+
+auto readEqtls(string eqtlFilename, ref Phenotype[] phenotypes)
+{
+  string[][string] eqtlList;
+
+  foreach (e; phenotypes)
+    eqtlList[e.geneName] = [];
+
+  File eqtlFile;
+  try
+  {
+    eqtlFile = File(eqtlFilename);
+  }
+  catch (Exception e)
+  {
+    stderr.writeln(e.msg);
+    exit(1);
+  }
+
+  foreach (line; eqtlFile.byLine)
+  {
+    auto splitLine = line.split;
+    if (splitLine[0] in eqtlList)
+    {
+      eqtlList[splitLine[0].to!string] ~= format!"\t%-(%s\t%)\t"(splitLine[1 .. 5]);
+    }
+  }
+
+  foreach (ref e; phenotypes)
+  {
+    e.eqtls = eqtlList[e.geneName].dup;
+  }
 }
 
 auto makeOut(const Opts opts)

@@ -47,32 +47,55 @@ extern (C)
   assert(approxEqual(gsl_cdf_tdist_P(-1.6, 7), 0.07681585));
 }
 
-pure ref T[] rank(T)(ref T[] rankArray, size_t[] orderIndex)
+pure ref T[] rank(T, A...)(ref T[] rankArray, A a)
 {
   //ranks array, giving ties mean rank
-  import std.algorithm : makeIndex;
-
-  immutable size_t len = rankArray.length;
-  makeIndex!("a < b")(rankArray, orderIndex);
-
-  T sumrank = 0.0;
-  size_t dupcount = 0;
-  T avgrank;
-
-  foreach (i, ref e; orderIndex)
+  static if (a.length == 1)
   {
-    sumrank += i;
-    dupcount++;
-    if (i == (len - 1) || rankArray[e] != rankArray[orderIndex[i + 1]])
+    import std.algorithm : makeIndex;
+
+    immutable size_t len = rankArray.length;
+    makeIndex!("a < b")(rankArray, a[0]);
+
+    T sumrank = 0.0;
+    size_t dupcount = 0;
+    T avgrank;
+
+    foreach (i, ref e; a[0])
     {
-      avgrank = sumrank / dupcount + 1;
-      foreach (ref j; orderIndex[(i - dupcount + 1) .. (i + 1)])
-        rankArray[j] = avgrank;
-      sumrank = 0;
-      dupcount = 0;
+      sumrank += i;
+      dupcount++;
+      if (i == (len - 1) || rankArray[e] != rankArray[a[0][i + 1]])
+      {
+        avgrank = sumrank / dupcount + 1;
+        foreach (ref j; a[0][(i - dupcount + 1) .. (i + 1)])
+          rankArray[j] = avgrank;
+        sumrank = 0;
+        dupcount = 0;
+      }
     }
+    return rankArray;
   }
-  return rankArray;
+  else
+  {
+    import std.conv : to;
+
+    //easier to rank discrete genotypes
+    T[3] countGenotypes = 0;
+    T[3] rankGenotypes;
+
+    //count numbers of 0, 1, 2 alleles
+    foreach (ref e; rankArray)
+      countGenotypes[e.to!size_t]++;
+    rankGenotypes[0] = (countGenotypes[0] + 1) / 2;
+    rankGenotypes[1] = (2 * countGenotypes[0] + countGenotypes[1] + 1) / 2;
+    rankGenotypes[2] = (2 * countGenotypes[0] + 2 * countGenotypes[1] + countGenotypes[2] + 1) / 2;
+
+    foreach (ref e; rankArray)
+      e = rankGenotypes[e.to!size_t];
+    return rankArray;
+
+  }
 }
 
 @safe unittest
@@ -84,26 +107,6 @@ pure ref T[] rank(T)(ref T[] rankArray, size_t[] orderIndex)
   assert(rank(vector, orderBuffer) == [5, 3.5, 1, 3.5, 2]);
 }
 
-pure ref T[] rank_discrete(T)(ref T[] rankArray)
-{
-  import std.conv : to;
-
-  //easier to rank discrete genotypes
-  T[3] countGenotypes = 0;
-  T[3] rankGenotypes;
-
-  //count numbers of 0, 1, 2 alleles
-  foreach (ref e; rankArray)
-    countGenotypes[e.to!size_t]++;
-  rankGenotypes[0] = (countGenotypes[0] + 1) / 2;
-  rankGenotypes[1] = (2 * countGenotypes[0] + countGenotypes[1] + 1) / 2;
-  rankGenotypes[2] = (2 * countGenotypes[0] + 2 * countGenotypes[1] + countGenotypes[2] + 1) / 2;
-
-  foreach (ref e; rankArray)
-    e = rankGenotypes[e.to!size_t];
-  return rankArray;
-}
-
 @safe unittest
 {
   //Ranking of discrete genotypes
@@ -113,12 +116,12 @@ pure ref T[] rank_discrete(T)(ref T[] rankArray)
   import std.range : iota;
 
   auto vector = [0.0, 1, 0, 2, 2, 2, 1];
-  assert(rank_discrete(vector) == [1.5, 3.5, 1.5, 6, 6, 6, 3.5]);
+  assert(rank(vector) == [1.5, 3.5, 1.5, 6, 6, 6, 3.5]);
 
   auto ranVector = iota(20).map!(a => uniform(0, 3).to!double).array;
   auto ranVector2 = ranVector.dup;
   auto orderBuffer = new size_t[](20);
-  assert(rank_discrete(ranVector) == rank(ranVector2, orderBuffer));
+  assert(rank(ranVector) == rank(ranVector2, orderBuffer));
 }
 
 pure void transform(ref double[] vector)

@@ -21,10 +21,10 @@ collection of minimum P values and against the beta distribution, writing out re
  */
 
 import calculation : betaParameters, corPvalue, correlation, Opts, rank,
-  rank_discrete, transform, VarianceException;
+  transform, VarianceException;
 import read_data : Genotype, Phenotype, readGenotype;
-import std.algorithm : canFind, count, filter, joiner, map, makeIndex,
-  max, sort;
+import std.algorithm : canFind, count, filter, joiner, map, makeIndex, max,
+  sort;
 import std.array : array, replace;
 import std.conv : to;
 import std.format : format;
@@ -215,7 +215,7 @@ void mapVeqtl(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
           genotype.values[i] = genotype.values[i] > 2.0 / 3 && genotype.values[i] < 4.0 / 3 ? 1.0
             : 0.0;
         }
-        transform(rank_discrete(genotype.values));
+        transform(rank(genotype.values));
       }
       else
       {
@@ -234,7 +234,7 @@ void mapVeqtl(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
 
       genotype.cor = fabs(corr[0]);
 
-      genotype.snpId ~= format("%s\t%s\t%s", corr[0], corr[1],
+      genotype.snpId ~= format!"%s\t%s\t%s"(corr[0], corr[1],
           (1.0 + simplePerm.count!(a => a > genotype.cor - EPSILON)) / (nPerm + 1));
     }
     catch (VarianceException e)

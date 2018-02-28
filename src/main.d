@@ -141,9 +141,11 @@ else
 
   auto orderBuffer = new size_t[](phenotype[0].values.length);
 
+  double[] cov;
+
   foreach (ref e; phenotype)
   {
-    analyseData(e, permutations, outFile, opts, orderBuffer);
+    analyseData(e, permutations, outFile, opts, orderBuffer, cov);
   }
 
   outFile.close;
@@ -163,7 +165,7 @@ else
 
   foreach (ref e; phenotype)
   {
-    analyseData(e, permutations, outFile, optsHet, orderBuffer);
+    analyseData(e, permutations, outFile, optsHet, orderBuffer, cov);
   }
 
   outFile.close;
@@ -180,7 +182,7 @@ else
 
   foreach (ref e; phenotype)
   {
-    analyseData(e, permutations, outFile, optsNormal, orderBuffer);
+    analyseData(e, permutations, outFile, optsNormal, orderBuffer, cov);
   }
 
   outFile.close;

@@ -108,7 +108,7 @@ The final column in results.adjusted now contains Q values, which sets a thresho
 
 Variance effects can be caused by SNPs being in partial linkage disequilibrium with an eQTL. To control for these effects, you can pass a list of eQTLs to remove when mapping v-eQTLs. This list should be a whitespace separated file, one row per eQTL, with 5 columns: gene, chromosome, base pair position, reference allele and alt allele. The file is passed with the `--eqtl` flag:
 
-     bsub -o out -J"parent[1-200]" \
+     bsub -o out -J"eqtls[1-200]" \
      "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
      --job-number \$LSB_JOBINDEX --eqtl eqtl_file --out results\$LSB_JOBINDEX"
 
@@ -116,7 +116,7 @@ Variance effects can be caused by SNPs being in partial linkage disequilibrium w
 
 A file containing a set of covariates can also be passed. This should be a whitespace delimited file, with a header with the subject IDs and one row per individual. All covariates should be numeric. The file is passed with the `--cov` flag:
 
-      bsub -o out -J"parent[1-200]" \
+      bsub -o out -J"covariates[1-200]" \
      "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
      --job-number \$LSB_JOBINDEX --cov covariates_file --out results\$LSB_JOBINDEX"
 

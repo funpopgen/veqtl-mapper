@@ -148,12 +148,12 @@ results &lt;- data.frame(results, Qvalues = qvalue(results$BETA)$qvalues)</code>
 <p>Variance effects can be caused by SNPs being in partial linkage disequilibrium with an eQTL. To control for these effects, you can pass a list of eQTLs to remove when mapping v-eQTLs. This list should be a whitespace separated file, one row per eQTL, with 5 columns: gene, chromosome, base pair position, reference allele and alt allele. The file is passed with the <code>--eqtl</code> flag:</p>
 <pre><code> bsub -o out -J"parent[1-200]" \
  "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
- --job-number \$LSB_JOBINDEX --eqtl eqtl_file --out results\$LSB_JOBINDEX"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+ --job-number \$LSB_JOBINDEX --eqtl eqtl_file --out results\$LSB_JOBINDEX"</code></pre>
 <h2 id="controlling-for-covariates">Controlling for covariates</h2>
 <p>A file containing a set of covariates can also be passed. This should be a whitespace delimited file, with a header with the subject IDs and one row per individual. All covariates should be numeric. The file is passed with the <code>--cov</code> flag:</p>
 <pre><code>  bsub -o out -J"parent[1-200]" \
  "veqtl-mapper --bed expression.bed --vcf genotype.vcf.gz --genes 50 \
- --job-number \$LSB_JOBINDEX --cov covariates_file --out results\$LSB_JOBINDEX"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+ --job-number \$LSB_JOBINDEX --cov covariates_file --out results\$LSB_JOBINDEX"</code></pre>
 <hr />
 <h2 id="building-from-source">Building from source</h2>
 <p>This requires a D compiler and a version of the GNU scientific library to be installed. Running the command:</p>

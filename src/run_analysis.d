@@ -249,6 +249,11 @@ void mapVeqtl(ref const Opts opts, ref size_t[] perms, ref Phenotype phenotype,
   auto minPvalues = sortMax.map!(a => corPvalue(a, nInd)).array;
   auto betaParam = betaParameters(minPvalues);
 
+  if (opts.verbose)
+  {
+    stderr.writefln("Beta parameters for %s: %.8g and %.8g.", phenotype.geneName, betaParam[0], betaParam[1]);
+  }
+
   //read through old file and compare correlations to sortMax to calculate FWER
   foreach (genotype; genotypes)
   {
